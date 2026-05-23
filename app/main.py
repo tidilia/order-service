@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 
 from app import config
-from app.infrastructure.db.session import create_session_factory
+from app.infrastructure.db.session import create_session_maker
 from app.presentation.api.orders import router
 from app.presentation.container import ApplicationContainer
 
@@ -11,13 +11,13 @@ def create_app():
 
     container = ApplicationContainer()
 
-    session_factory = create_session_factory(
+    session_maker = create_session_maker(
         db_url=config.DATABASE_URL,
     )
 
     # 3. ЗАПОЛНЯЕМ CONFIG
     container.config.from_dict(
-        {"infrastructure": {"db": {"session_factory": session_factory}}}
+        {"infrastructure": {"db": {"session_factory": session_maker}}}
     )
 
     container.wire(modules=["app.presentation.api.orders"])
