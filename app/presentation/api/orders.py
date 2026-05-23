@@ -3,6 +3,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 
 from app.application.container import ApplicationContainer
 from app.application.use_cases.create_order import CreateOrderUseCase, OrderDTO
+from app.application.use_cases.get_order import GetOrderUseCase
 from app.core.models import Order
 
 # from app.core.exceptions import OrderNotFoundError
@@ -26,3 +27,15 @@ async def create_order(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Failed to create order: {str(e)}",
         )
+
+
+@router.get("/orders/{order_id}", response_model=Order)
+@inject
+async def get_order(
+    order_id: str,
+    use_case: GetOrderUseCase = Depends(
+        Provide[ApplicationContainer.get_order_use_case]
+    ),
+):
+    order = await use_case(order_id)
+    return order
