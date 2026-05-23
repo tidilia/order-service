@@ -26,8 +26,7 @@ class CreateOrderUseCase:
                 existing_order = await uow.orders.get_by_idempotency_key(key)
                 if existing_order:
                     if (
-                        existing_order.id != order.id
-                        or existing_order.user_id != order.user_id
+                        existing_order.user_id != order.user_id
                         or existing_order.item_id != order.item_id
                         or existing_order.quantity != order.quantity
                     ):
