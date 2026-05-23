@@ -1,5 +1,3 @@
-from uuid import UUID
-
 import pytest
 
 from app.application.use_cases.create_order import CreateOrderUseCase, OrderDTO
@@ -23,5 +21,5 @@ async def test_create_order():
 
     # Проверки
     assert order.id is not None
-    assert order.user_id == UUID("8bd5c048-5c7d-4ca6-97a9-42db706c7783")
+    assert order.user_id == "8bd5c048-5c7d-4ca6-97a9-42db706c7783"
     assert len(uow.orders._orders) == 1

@@ -1,5 +1,3 @@
-from uuid import UUID
-
 from pydantic import BaseModel
 
 from app.core.models import EventTypeEnum, Order, OrderStatusEnum
@@ -13,8 +11,8 @@ class OrderDTO(BaseModel):
 
     user_id: str
     quantity: int
-    item_id: UUID
-    idempotency_key: UUID
+    item_id: str
+    idempotency_key: str
 
 
 class CreateOrderUseCase:

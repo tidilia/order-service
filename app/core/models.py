@@ -1,6 +1,5 @@
 from datetime import datetime
 from enum import StrEnum
-from uuid import UUID
 
 from pydantic import BaseModel
 
@@ -22,9 +21,9 @@ class OrderStatusEnum(StrEnum):
 
 class Order(BaseModel):
     id: int
-    user_id: UUID
+    user_id: str
     quantity: int
-    item_id: UUID
+    item_id: str
     status: OrderStatusEnum
     created_at: datetime
     updated_at: datetime

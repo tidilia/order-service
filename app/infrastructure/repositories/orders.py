@@ -1,5 +1,4 @@
 from datetime import UTC, datetime
-from uuid import UUID
 
 from pydantic import BaseModel
 from sqlalchemy import insert, literal_column, select
@@ -14,8 +13,8 @@ class OrderRepository:
     class CreateDTO(BaseModel):
         """DTO для создания заказа"""
 
-        user_id: UUID
-        item_id: UUID
+        user_id: str
+        item_id: str
         quantity: int
         status: OrderStatusEnum
 
@@ -65,9 +64,9 @@ class OrderRepository:
         """Преобразование строки БД в Domain модель"""
         return Order(
             id=str(row._mapping["id"]),
-            user_id=UUID(row._mapping["user_id"]),
+            user_id=row._mapping["user_id"],
             quantity=row._mapping["quantity"],
-            item_id=UUID(row._mapping["item_id"]),
+            item_id=row._mapping["item_id"],
             status=OrderStatusEnum(row._mapping["status"]),
             created_at=row._mapping["created_at"],
             updated_at=row._mapping["updated_at"],

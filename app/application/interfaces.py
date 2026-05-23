@@ -1,10 +1,11 @@
 from abc import ABC, abstractmethod
+
 from app.core.models import Order
 
 
 class OrderRepository(ABC):
     """Абстракция для работы с заказами"""
-    
+
     class CreateDTO(ABC):
         pass
 
