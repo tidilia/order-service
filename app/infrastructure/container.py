@@ -1,9 +1,5 @@
-
 from dependency_injector import containers, providers
-from sqlalchemy.ext.asyncio import (
-    AsyncSession,
-    create_async_engine,
-)
+from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
 
 from app.infrastructure.unit_of_work import UnitOfWork

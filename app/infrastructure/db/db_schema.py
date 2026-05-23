@@ -26,6 +26,7 @@ orders_tbl = Table(
         server_default=func.now(),
         onupdate=func.now(),
     ),
+    Column("idempotency_key", Text, nullable=True, unique=True),
 )
 
 outbox_tbl = Table(

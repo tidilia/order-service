@@ -21,12 +21,28 @@ class CreateOrderUseCase:
 
     async def __call__(self, order: OrderDTO) -> Order:
         async with self._unit_of_work() as uow:
+            key = order.idempotency_key
+            if key:
+                existing_order = await uow.orders.get_by_idempotency_key(key)
+                if existing_order:
+                    if (
+                        existing_order.id != order.id
+                        or existing_order.user_id != order.user_id
+                        or existing_order.item_id != order.item_id
+                        or existing_order.quantity != order.quantity
+                    ):
+                        raise ValueError(
+                            "Order with the same idempotency key already exists"
+                        )
+                    return existing_order
+
             order = await uow.orders.create(
                 OrderRepository.CreateDTO(
                     user_id=order.user_id,
                     quantity=order.quantity,
                     item_id=order.item_id,
                     status=OrderStatusEnum.NEW,
+                    idempotency_key=key,
                 )
             )
 

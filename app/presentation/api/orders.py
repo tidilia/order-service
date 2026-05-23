@@ -1,9 +1,9 @@
 from dependency_injector.wiring import Provide, inject
 from fastapi import APIRouter, Depends, HTTPException, status
 
+from app.application.container import ApplicationContainer
 from app.application.use_cases.create_order import CreateOrderUseCase, OrderDTO
 from app.core.models import Order
-from app.application.container import ApplicationContainer
 
 # from app.core.exceptions import OrderNotFoundError
 

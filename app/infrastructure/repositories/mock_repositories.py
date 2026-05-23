@@ -10,9 +10,11 @@ class InMemoryOrderRepository:
 
     def __init__(self):
         self._orders = {}
+        self._orders_by_idempotency_key = {}
         self._next_id = 1
 
     async def create(self, order: OrderRepository.CreateDTO) -> Order:
+        key = order.idempotency_key
         order_id = str(self._next_id)
         self._next_id += 1
 
@@ -26,12 +28,18 @@ class InMemoryOrderRepository:
             updated_at=datetime.now(UTC),
         )
         self._orders[order_id] = order
+        self._orders_by_idempotency_key[key] = order
         return order
 
     async def get_by_id(self, order_id: str) -> Order:
         if order_id not in self._orders:
             raise ValueError(f"Order {order_id} not found")
         return self._orders[order_id]
+
+    async def get_by_idempotency_key(self, key: str):
+        if key not in self._orders_by_idempotency_key:
+            return None
+        return self._orders_by_idempotency_key[key]
 
 
 class InMemoryOutboxRepository:

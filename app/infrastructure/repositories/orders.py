@@ -17,6 +17,7 @@ class OrderRepository:
         item_id: str
         quantity: int
         status: OrderStatusEnum
+        idempotency_key: str
 
     def __init__(self, session: AsyncSession):
         """Repository получает сессию БД"""
@@ -37,6 +38,7 @@ class OrderRepository:
                     "status": order.status,
                     "created_at": datetime.now(UTC),
                     "updated_at": datetime.now(UTC),
+                    "idempotency_key": order.idempotency_key,
                 }
             )
             .returning(literal_column("*"))
@@ -46,6 +48,15 @@ class OrderRepository:
 
         # Преобразование в Domain модель
         return await self.get_by_id(row.id)
+
+    async def get_by_idempotency_key(self, key: str):
+        result = await self._session.execute(
+            select(orders_tbl).where(orders_tbl.c.idempotency_key == key)
+        )
+        row = result.fetchone()
+        if row:
+            return self._construct(row)
+        return None
 
     async def get_by_id(self, order_id: str) -> Order:
         """Получение заказа по ID"""
