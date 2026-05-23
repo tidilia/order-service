@@ -1,29 +1,35 @@
 from fastapi import FastAPI
 
-from app import config
-from app.infrastructure.db.session import create_session_maker
 from app.presentation.api.orders import router
-from app.presentation.container import ApplicationContainer
+from app.infrastructure.container import InfrastructureContainer
+from app.application.container import ApplicationContainer
+from app import config
 
 
 def create_app():
     app = FastAPI()
 
-    container = ApplicationContainer()
+    # 1. infrastructure container
+    infra = InfrastructureContainer()
 
-    session_maker = create_session_maker(
-        db_url=config.DATABASE_URL,
+    infra.config.from_dict({
+        "db": {
+            "url": config.DATABASE_URL,
+        }
+    })
+
+    # 2. application container
+    app_container = ApplicationContainer(
+        infrastructure=infra,
     )
 
-    # 3. ЗАПОЛНЯЕМ CONFIG
-    container.config.from_dict(
-        {"infrastructure": {"db": {"session_factory": session_maker}}}
-    )
+    # 3. DI wiring
+    infra.wire(modules=["app.presentation.api.orders"])
+    app_container.wire(modules=["app.presentation.api.orders"])
 
-    container.wire(modules=["app.presentation.api.orders"])
+    # 4. attach
+    app.container = app_container
 
-    # 4. прикрепляем контейнер к app
-    app.container = container
     app.include_router(router, prefix="/api")
 
     return app

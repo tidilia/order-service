@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 
 from app.application.use_cases.create_order import CreateOrderUseCase, OrderDTO
 from app.core.models import Order
-from app.presentation.container import ApplicationContainer
+from app.application.container import ApplicationContainer
 
 # from app.core.exceptions import OrderNotFoundError
 
