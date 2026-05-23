@@ -1,4 +1,3 @@
-from typing import AsyncGenerator
 
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
@@ -22,7 +21,7 @@ def create_session_maker(db_url: str) -> async_sessionmaker[AsyncSession]:
     )
 
 
-async def create_session_factory(db_url: str) -> AsyncGenerator[AsyncSession, None]:
-    session_maker = create_session_maker(db_url)
-    async with session_maker() as session:
-        yield session
+# async def create_session_factory(db_url: str) -> AsyncGenerator[AsyncSession, None]:
+#     session_maker = create_session_maker(db_url)
+#     async with session_maker() as session:
+#         yield session

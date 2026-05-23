@@ -18,8 +18,14 @@ orders_tbl = Table(
     Column("user_id", Text, nullable=False),
     Column("item_id", Text, nullable=False),
     Column("quantity", Integer, nullable=False),
-    Column("created_at", DateTime, server_default=func.now()),
-    Column("updated_at", DateTime, server_default=func.now(), onupdate=func.now()),
+    Column("status", Text, nullable=False),
+    Column("created_at", DateTime(timezone=True), server_default=func.now()),
+    Column(
+        "updated_at",
+        DateTime(timezone=True),
+        server_default=func.now(),
+        onupdate=func.now(),
+    ),
 )
 
 outbox_tbl = Table(
@@ -29,5 +35,5 @@ outbox_tbl = Table(
     Column("event_type", Text, nullable=False),
     Column("payload", JSON, nullable=False),
     Column("status", Text, nullable=False),  # PENDING, SENT
-    Column("created_at", DateTime, server_default=func.now()),
+    Column("created_at", DateTime(timezone=True), server_default=func.now()),
 )

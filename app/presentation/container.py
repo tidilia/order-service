@@ -11,7 +11,7 @@ class ApplicationContainer(containers.DeclarativeContainer):
     # Unit of Work
     unit_of_work = providers.Factory(
         UnitOfWork,
-        session_factory=config.infrastructure.db.session_factory,
+        session_factory=config.infrastructure.db.create_session_maker,
     )
 
     # Use Cases

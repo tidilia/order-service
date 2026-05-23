@@ -20,7 +20,7 @@ class OrderStatusEnum(StrEnum):
 
 
 class Order(BaseModel):
-    id: int
+    id: str
     user_id: str
     quantity: int
     item_id: str
