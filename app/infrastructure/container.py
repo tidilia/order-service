@@ -45,7 +45,7 @@ class InfrastructureContainer(containers.DeclarativeContainer):
         http_client=http_client,
     )
 
-    payment_client = providers.Factory(
+    payments_client = providers.Factory(
         PaymentsServiceClient,
         base_url=config.capashino_clients.base_url,
         api_key=config.api.api_key,
