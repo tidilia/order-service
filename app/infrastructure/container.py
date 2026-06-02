@@ -40,6 +40,6 @@ class InfrastructureContainer(containers.DeclarativeContainer):
     catalog_client = providers.Factory(
         CatalogServiceClient,
         base_url=config.catalog.base_url,
-        api_key=config.api_key,
+        api_key=config.api.api_key,
         http_client=http_client,
     )

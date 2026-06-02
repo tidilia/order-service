@@ -20,7 +20,9 @@ def create_app():
             "catalog": {
                 "base_url": config.CAPASHINO_URL,
             },
-            "api": config.LMS_API_KEY,
+            "api": {
+                "api_key": config.LMS_API_KEY,
+            },
         }
     )
 
