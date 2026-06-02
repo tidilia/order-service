@@ -1,6 +1,6 @@
 import uuid
 
-from sqlalchemy import JSON, Column, DateTime, Integer, Table, Text, func
+from sqlalchemy import JSON, Column, DateTime, Integer, Numeric, Table, Text, func
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import DeclarativeBase
 
@@ -27,6 +27,7 @@ orders_tbl = Table(
         onupdate=func.now(),
     ),
     Column("idempotency_key", Text, nullable=True, unique=True),
+    Column("amount", Numeric(10, 2), nullable=False),
 )
 
 outbox_tbl = Table(

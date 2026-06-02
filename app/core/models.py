@@ -1,4 +1,5 @@
 from datetime import datetime
+from decimal import Decimal
 from enum import StrEnum
 
 from pydantic import BaseModel
@@ -32,6 +33,7 @@ class Order(BaseModel):
     status: OrderStatusEnum
     created_at: datetime
     updated_at: datetime
+    amount: Decimal
     # status_history:
 
 

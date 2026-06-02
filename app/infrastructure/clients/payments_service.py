@@ -47,7 +47,7 @@ class PaymentsServiceClient:
             idempotency_key=idempotency_key,
             callback_url=self.callback_url,
         )
-        
+
         print(data)
 
         print(f"create_payment callback: {self.callback_url}")

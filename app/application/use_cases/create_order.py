@@ -54,6 +54,7 @@ class CreateOrderUseCase:
             item = await self._catalog_client.get_item(order.item_id)
             if item.available_qty < order.quantity:
                 raise HTTPException(status_code=400, detail="Not enough items in stock")
+            full_amount = item.price * order.quantity
 
             order = await uow.orders.create(
                 OrderRepository.CreateDTO(
@@ -62,6 +63,7 @@ class CreateOrderUseCase:
                     item_id=order.item_id,
                     status=OrderStatusEnum.NEW,
                     idempotency_key=key,
+                    amount=full_amount,
                 )
             )
 
@@ -79,12 +81,12 @@ class CreateOrderUseCase:
             try:
                 print("create order payment start")
                 print(order)
-                print(f"order id {order.id}, amount {order.amount}, idempotency key {key}")
+                print(
+                    f"order id {order.id}, amount {order.amount}, idempotency key {key}"
+                )
                 await self._payments_client.create_payment(
                     self.CreateOrderCreatePaymentDTO(
-                        order_id=order.id, 
-                        amount=order.amount, 
-                        idempotency_key=key
+                        order_id=order.id, amount=order.amount, idempotency_key=key
                     )
                 )
                 print("create payment end")

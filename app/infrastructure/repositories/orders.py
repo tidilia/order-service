@@ -1,4 +1,5 @@
 from datetime import UTC, datetime
+from decimal import Decimal
 
 from pydantic import BaseModel
 from sqlalchemy import insert, literal_column, select, update
@@ -18,6 +19,7 @@ class OrderRepository:
         quantity: int
         status: OrderStatusEnum
         idempotency_key: str
+        amount: Decimal
 
     def __init__(self, session: AsyncSession):
         """Repository получает сессию БД"""
@@ -39,6 +41,7 @@ class OrderRepository:
                     "created_at": datetime.now(UTC),
                     "updated_at": datetime.now(UTC),
                     "idempotency_key": order.idempotency_key,
+                    "amount": order.amount,
                 }
             )
             .returning(literal_column("*"))
