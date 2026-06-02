@@ -17,7 +17,7 @@ class ApplicationContainer(containers.DeclarativeContainer):
         unit_of_work=infrastructure.unit_of_work,
         catalog_client=infrastructure.catalog_client,
         payments_client=infrastructure.payments_client,
-        callback_url=config.payments.callback_url,
+        callback_url=infrastructure.config.payments.callback_url,
     )
 
     get_order_use_case = providers.Factory(
