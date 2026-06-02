@@ -1,11 +1,11 @@
 from datetime import UTC, datetime
 
 from pydantic import BaseModel
-from sqlalchemy import insert, literal_column, select
+from sqlalchemy import insert, literal_column, select, update
 from sqlalchemy.engine import Row
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.models import Order, OrderStatusEnum
+from app.core.models import Order, OrderStatusEnum, PaymentStatusEnum
 from app.infrastructure.db.db_schema import orders_tbl
 
 
@@ -69,6 +69,13 @@ class OrderRepository:
 
         # Преобразование из БД в Domain
         return self._construct(row)
+
+    async def update_status(self, order_id: str, status: PaymentStatusEnum):
+        stmt = (
+            update(orders_tbl).where(orders_tbl.c.id == order_id).values(status=status)
+        )
+
+        await self._session.execute(stmt)
 
     @staticmethod
     def _construct(row: Row) -> Order:
