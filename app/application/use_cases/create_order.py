@@ -77,10 +77,12 @@ class CreateOrderUseCase:
             await uow.commit()
 
             try:
-                print(f"try {str(order.id)}  {self._callback_url}")
+                print("create order payment start")
                 await self._payments_client.create_payment(
                     self.CreateOrderCreatePaymentDTO(
-                        order_id=order.id, amount=order.amount, idempotency_key=key
+                        order_id=order.id, 
+                        amount=order.amount, 
+                        idempotency_key=key
                     )
                 )
             except Exception:

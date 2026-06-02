@@ -47,7 +47,7 @@ class PaymentsServiceClient:
             callback_url=self.callback_url,
         )
 
-        print(url)
+        print(f"create_payment callback: {self.callback_url}")
 
         try:
             response = await self.http_client.post(
