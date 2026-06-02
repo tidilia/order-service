@@ -72,6 +72,7 @@ class CreateOrderUseCase:
             await uow.commit()
 
             try:
+                print(f"try {str(order.id)}  {self._callback_url}")
                 await self._payments_client.create_payment(
                     self._payments_client.RequestDTO(
                         order_id=str(order.id),
