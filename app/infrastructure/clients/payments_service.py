@@ -30,7 +30,7 @@ class PaymentsServiceClient:
     async def create_payment(
         self, data: "PaymentsServiceClient.RequestDTO"
     ) -> "PaymentsServiceClient.ResponseDTO":
-        url = urljoin(self.base_url, "api/payments/order")
+        url = urljoin(self.base_url, f"api/payments/{data.order_id}")
         headers = {"X-API-Key": self.api_key}
 
         try:
@@ -40,6 +40,7 @@ class PaymentsServiceClient:
                 json=data.model_dump(),
                 timeout=10.0,
             )
+            print(response.text)
             response.raise_for_status()
             return self.ResponseDTO.model_validate(response.json())
 
