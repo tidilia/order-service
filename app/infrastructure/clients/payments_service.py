@@ -30,8 +30,10 @@ class PaymentsServiceClient:
     async def create_payment(
         self, data: "PaymentsServiceClient.RequestDTO"
     ) -> "PaymentsServiceClient.ResponseDTO":
-        url = urljoin(self.base_url, f"api/payments/{data.order_id}")
+        url = urljoin(self.base_url, f"api/payments/")
         headers = {"X-API-Key": self.api_key}
+        
+        print(url)
 
         try:
             response = await self.http_client.post(
