@@ -1,3 +1,4 @@
+from fastapi import HTTPException
 from pydantic import BaseModel
 
 from app.application.interfaces import CatalogGateway
@@ -39,7 +40,10 @@ class CreateOrderUseCase:
 
             item = await self._catalog_client.get_item(order.item_id)
             if item.available_qty < order.quantity:
-                raise ValueError("Not enough items in stock")
+                raise HTTPException(
+                    status_code=400,
+                    detail="Not enough items in stock"
+                    )
             order = await uow.orders.create(
                 OrderRepository.CreateDTO(
                     user_id=order.user_id,
