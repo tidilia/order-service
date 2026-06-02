@@ -37,6 +37,7 @@ class PaymentsServiceClient:
     async def create_payment(
         self, order_id, amount, idempotency_key
     ) -> "PaymentsServiceClient.ResponseDTO":
+        print({"inside function create payment"})
         url = urljoin(self.base_url, "api/payments/")
         headers = {"X-API-Key": self.api_key}
 
@@ -46,6 +47,8 @@ class PaymentsServiceClient:
             idempotency_key=idempotency_key,
             callback_url=self.callback_url,
         )
+        
+        print(data)
 
         print(f"create_payment callback: {self.callback_url}")
 

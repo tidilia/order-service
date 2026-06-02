@@ -78,6 +78,7 @@ class CreateOrderUseCase:
 
             try:
                 print("create order payment start")
+                print(f"order id {order.id}, amount {order.amount}, idempotency key {key}")
                 await self._payments_client.create_payment(
                     self.CreateOrderCreatePaymentDTO(
                         order_id=order.id, 
@@ -85,6 +86,7 @@ class CreateOrderUseCase:
                         idempotency_key=key
                     )
                 )
+                print("create payment end")
             except Exception:
                 await uow.orders.update_status(order.id, OrderStatusEnum.CANCELLED)
                 await uow.commit()
