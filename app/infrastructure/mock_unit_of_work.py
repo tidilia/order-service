@@ -1,5 +1,7 @@
 from app.infrastructure.repositories.mock_repositories import (
-    InMemoryOrderRepository, InMemoryOutboxRepository)
+    InMemoryOrderRepository,
+    InMemoryOutboxRepository,
+)
 
 # class InMemoryUnitOfWork:
 #     def __init__(self):

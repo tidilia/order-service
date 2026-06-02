@@ -11,7 +11,9 @@ class ApplicationContainer(containers.DeclarativeContainer):
     create_order_use_case = providers.Factory(
         CreateOrderUseCase,
         unit_of_work=infrastructure.unit_of_work,
+        catalog_client=infrastructure.catalog_client,
     )
+
     get_order_use_case = providers.Factory(
         GetOrderUseCase,
         unit_of_work=infrastructure.unit_of_work,

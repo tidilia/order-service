@@ -23,3 +23,9 @@ class OrderRepository(ABC):
     async def update(self, order: Order) -> Order:
         """Обновить заказ"""
         pass
+
+
+class CatalogGateway(ABC):
+    @abstractmethod
+    async def get_item(self, item_id: str) -> dict:
+        pass

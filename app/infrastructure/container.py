@@ -1,7 +1,9 @@
+import httpx
 from dependency_injector import containers, providers
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
 
+from app.infrastructure.clients.catalog_service import CatalogServiceClient
 from app.infrastructure.unit_of_work import UnitOfWork
 
 
@@ -29,4 +31,15 @@ class InfrastructureContainer(containers.DeclarativeContainer):
     unit_of_work = providers.Factory(
         UnitOfWork,
         session_factory=session_factory,
+    )
+
+    http_client = providers.Singleton(
+        httpx.AsyncClient,
+    )
+
+    catalog_client = providers.Factory(
+        CatalogServiceClient,
+        base_url=config.catalog.base_url,
+        api_key=config.api_key,
+        http_client=http_client,
     )

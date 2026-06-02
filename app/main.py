@@ -16,7 +16,11 @@ def create_app():
         {
             "db": {
                 "url": config.DATABASE_URL,
-            }
+            },
+            "catalog": {
+                "base_url": config.CAPASHINO_URL,
+            },
+            "api": config.LMS_API_KEY,
         }
     )
 

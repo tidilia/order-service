@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 
+from app.application.interfaces import CatalogGateway
 from app.core.models import EventTypeEnum, Order, OrderStatusEnum
 from app.infrastructure.repositories.orders import OrderRepository
 from app.infrastructure.repositories.outbox import OutboxRepository
@@ -16,8 +17,9 @@ class OrderDTO(BaseModel):
 
 
 class CreateOrderUseCase:
-    def __init__(self, unit_of_work: UnitOfWork):
+    def __init__(self, unit_of_work: UnitOfWork, catalog_client: CatalogGateway):
         self._unit_of_work = unit_of_work
+        self._catalog_client = catalog_client
 
     async def __call__(self, order: OrderDTO) -> Order:
         async with self._unit_of_work() as uow:
@@ -35,6 +37,9 @@ class CreateOrderUseCase:
                         )
                     return existing_order
 
+            item = await self._catalog_client.get_item(order.item_id)
+            if item.available_qty < order.quantity:
+                raise ValueError("Not enough items in stock")
             order = await uow.orders.create(
                 OrderRepository.CreateDTO(
                     user_id=order.user_id,
