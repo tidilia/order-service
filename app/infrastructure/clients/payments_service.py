@@ -10,8 +10,8 @@ class PaymentsServiceClient:
     class RequestDTO(BaseModel):
         order_id: str
         amount: Decimal
-        callback_url: str
         idempotency_key: str
+        callback_url: str
 
     class ResponseDTO(BaseModel):
         id: str
@@ -22,17 +22,31 @@ class PaymentsServiceClient:
         idempotency_key: str
         created_at: datetime
 
-    def __init__(self, base_url: str, api_key: str, http_client: httpx.AsyncClient):
+    def __init__(
+        self,
+        base_url: str,
+        callback_url: str,
+        api_key: str,
+        http_client: httpx.AsyncClient,
+    ):
         self.base_url = base_url
         self.api_key = api_key
         self.http_client = http_client
+        self.callback_url = callback_url
 
     async def create_payment(
-        self, data: "PaymentsServiceClient.RequestDTO"
+        self, order_id, amount, idempotency_key
     ) -> "PaymentsServiceClient.ResponseDTO":
         url = urljoin(self.base_url, "api/payments/")
         headers = {"X-API-Key": self.api_key}
-        
+
+        data = self.RequestDTO(
+            order_id=order_id,
+            amount=amount,
+            idempotency_key=idempotency_key,
+            callback_url=self.callback_url,
+        )
+
         print(url)
 
         try:

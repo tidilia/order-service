@@ -38,7 +38,6 @@ class InfrastructureContainer(containers.DeclarativeContainer):
         httpx.AsyncClient,
     )
 
-
     catalog_client = providers.Factory(
         CatalogServiceClient,
         base_url=config.capashino_clients.base_url,
@@ -50,5 +49,6 @@ class InfrastructureContainer(containers.DeclarativeContainer):
         PaymentsServiceClient,
         base_url=config.capashino_clients.base_url,
         api_key=config.api.api_key,
+        callback_url=config.payments.callback_url,
         http_client=http_client,
     )

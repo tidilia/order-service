@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 from fastapi import HTTPException
 from pydantic import BaseModel
 
@@ -18,17 +20,20 @@ class OrderDTO(BaseModel):
 
 
 class CreateOrderUseCase:
+    class CreateOrderCreatePaymentDTO(BaseModel):
+        order_id: str
+        amount: Decimal
+        idempotency_key: str
+
     def __init__(
         self,
         unit_of_work: UnitOfWork,
         catalog_client: CatalogGateway,
         payments_client,
-        callback_url: str,
     ):
         self._unit_of_work = unit_of_work
         self._catalog_client = catalog_client
         self._payments_client = payments_client
-        self._callback_url = callback_url
 
     async def __call__(self, order: OrderDTO) -> Order:
         async with self._unit_of_work() as uow:
@@ -74,11 +79,8 @@ class CreateOrderUseCase:
             try:
                 print(f"try {str(order.id)}  {self._callback_url}")
                 await self._payments_client.create_payment(
-                    self._payments_client.RequestDTO(
-                        order_id=str(order.id),
-                        amount=order.amount,
-                        callback_url=self._callback_url,
-                        idempotency_key=key,
+                    self.CreateOrderCreatePaymentDTO(
+                        order_id=order.id, amount=order.amount, idempotency_key=key
                     )
                 )
             except Exception:
