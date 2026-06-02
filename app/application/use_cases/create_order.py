@@ -18,9 +18,17 @@ class OrderDTO(BaseModel):
 
 
 class CreateOrderUseCase:
-    def __init__(self, unit_of_work: UnitOfWork, catalog_client: CatalogGateway):
+    def __init__(
+        self,
+        unit_of_work: UnitOfWork,
+        catalog_client: CatalogGateway,
+        payments_client,
+        callback_url: str,
+    ):
         self._unit_of_work = unit_of_work
         self._catalog_client = catalog_client
+        self._payments_client = payments_client
+        self._callback_url = callback_url
 
     async def __call__(self, order: OrderDTO) -> Order:
         async with self._unit_of_work() as uow:
@@ -40,10 +48,8 @@ class CreateOrderUseCase:
 
             item = await self._catalog_client.get_item(order.item_id)
             if item.available_qty < order.quantity:
-                raise HTTPException(
-                    status_code=400,
-                    detail="Not enough items in stock"
-                    )
+                raise HTTPException(status_code=400, detail="Not enough items in stock")
+
             order = await uow.orders.create(
                 OrderRepository.CreateDTO(
                     user_id=order.user_id,
@@ -64,4 +70,17 @@ class CreateOrderUseCase:
 
             # 4. Коммит транзакции
             await uow.commit()
+
+            try:
+                await self._payments_client.create_payment(
+                    self._payments_client.RequestDTO(
+                        order_id=str(order.id),
+                        amount=order.amount,
+                        callback_url=self._callback_url,
+                        idempotency_key=key,
+                    )
+                )
+            except Exception:
+                await uow.orders.update_status(order.id, OrderStatusEnum.CANCELLED)
+                await uow.commit()
             return order

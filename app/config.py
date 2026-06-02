@@ -7,3 +7,4 @@ SENTRY_DSN = os.getenv("SENTRY_DSN")
 DATABASE_URL = os.getenv("POSTGRES_CONNECTION_STRING")
 if DATABASE_URL.startswith("postgres://"):
     DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql+asyncpg://", 1)
+INTERNAL_SERVICE_URL = os.getenv("INTERNAL_SERVICE_URL")

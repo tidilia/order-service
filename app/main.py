@@ -1,3 +1,5 @@
+from urllib.parse import urljoin
+
 from fastapi import FastAPI
 
 from app import config
@@ -11,17 +13,20 @@ def create_app():
 
     # 1. infrastructure container
     infra = InfrastructureContainer()
-
+    callback_url = urljoin(config.INTERNAL_SERVICE_URL, "/api/orders/payment-callback")
     infra.config.from_dict(
         {
             "db": {
                 "url": config.DATABASE_URL,
             },
-            "catalog": {
+            "capashino_clients": {
                 "base_url": config.CAPASHINO_URL,
             },
             "api": {
                 "api_key": config.LMS_API_KEY,
+            },
+            "payments": {
+                "callback_url": callback_url,
             },
         }
     )

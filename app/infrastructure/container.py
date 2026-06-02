@@ -4,6 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
 
 from app.infrastructure.clients.catalog_service import CatalogServiceClient
+from app.infrastructure.clients.payments_service import PaymentsServiceClient
 from app.infrastructure.unit_of_work import UnitOfWork
 
 
@@ -39,7 +40,14 @@ class InfrastructureContainer(containers.DeclarativeContainer):
 
     catalog_client = providers.Factory(
         CatalogServiceClient,
-        base_url=config.catalog.base_url,
+        base_url=config.capashino_clients.base_url,
+        api_key=config.api.api_key,
+        http_client=http_client,
+    )
+
+    payment_client = providers.Factory(
+        PaymentsServiceClient,
+        base_url=config.capashino_clients.base_url,
         api_key=config.api.api_key,
         http_client=http_client,
     )

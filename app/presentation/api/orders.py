@@ -4,6 +4,10 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from app.application.container import ApplicationContainer
 from app.application.use_cases.create_order import CreateOrderUseCase, OrderDTO
 from app.application.use_cases.get_order import GetOrderUseCase
+from app.application.use_cases.handle_payment_callback import PaymentCallbackDTO
+from app.application.use_cases.handle_payment_callback import (
+    HandlePaymentCallbackUseCase,
+)
 from app.core.models import Order
 
 # from app.core.exceptions import OrderNotFoundError
@@ -41,3 +45,14 @@ async def get_order(
 ):
     order = await use_case(order_id)
     return order
+
+
+@router.post("/orders/payment-callback")
+async def payment_callback(
+    data: PaymentCallbackDTO,
+    use_case: HandlePaymentCallbackUseCase = Depends(
+        Provide[ApplicationContainer.handle_payment_use_case]
+    ),
+):
+    await use_case(data)
+    return {"ok": True}

@@ -11,6 +11,11 @@ class OrderStatusEnum(StrEnum):
     CANCELLED = "CANCELLED"
 
 
+class PaymentStatusEnum(StrEnum):
+    SUCCEEDED = "succeeded"
+    FAILED = "failed"
+
+
 # class Item(BaseModel):
 #     id: int
 #     name: str
