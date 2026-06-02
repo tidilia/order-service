@@ -51,7 +51,7 @@ async def get_order(
 async def payment_callback(
     data: PaymentCallbackDTO,
     use_case: HandlePaymentCallbackUseCase = Depends(
-        Provide[ApplicationContainer.handle_payment_use_case]
+        Provide[ApplicationContainer.handle_payment_callback_use_case]
     ),
 ):
     await use_case(data)
