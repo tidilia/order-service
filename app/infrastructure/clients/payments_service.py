@@ -30,7 +30,7 @@ class PaymentsServiceClient:
     async def create_payment(
         self, data: "PaymentsServiceClient.RequestDTO"
     ) -> "PaymentsServiceClient.ResponseDTO":
-        url = urljoin(self.base_url, f"api/payments/")
+        url = urljoin(self.base_url, "api/payments/")
         headers = {"X-API-Key": self.api_key}
         
         print(url)
