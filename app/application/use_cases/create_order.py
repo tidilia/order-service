@@ -55,6 +55,7 @@ class CreateOrderUseCase:
             if item.available_qty < order.quantity:
                 raise HTTPException(status_code=400, detail="Not enough items in stock")
             full_amount = item.price * order.quantity
+            print(full_amount)
 
             order = await uow.orders.create(
                 OrderRepository.CreateDTO(
