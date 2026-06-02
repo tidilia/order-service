@@ -91,5 +91,6 @@ class OrderRepository:
             status=OrderStatusEnum(row._mapping["status"]),
             created_at=row._mapping["created_at"],
             updated_at=row._mapping["updated_at"],
+            amount=row._mapping["amount"],
             # status_history=row._mapping["status_history"] or [],
         )
