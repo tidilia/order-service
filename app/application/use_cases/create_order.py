@@ -78,6 +78,7 @@ class CreateOrderUseCase:
 
             try:
                 print("create order payment start")
+                print(order)
                 print(f"order id {order.id}, amount {order.amount}, idempotency key {key}")
                 await self._payments_client.create_payment(
                     self.CreateOrderCreatePaymentDTO(
