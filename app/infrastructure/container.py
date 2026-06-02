@@ -38,6 +38,7 @@ class InfrastructureContainer(containers.DeclarativeContainer):
         httpx.AsyncClient,
     )
 
+
     catalog_client = providers.Factory(
         CatalogServiceClient,
         base_url=config.capashino_clients.base_url,

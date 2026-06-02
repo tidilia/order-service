@@ -14,6 +14,7 @@ def create_app():
     # 1. infrastructure container
     infra = InfrastructureContainer()
     callback_url = urljoin(config.INTERNAL_SERVICE_URL, "/api/orders/payment-callback")
+    print(callback_url)
     infra.config.from_dict(
         {
             "db": {
