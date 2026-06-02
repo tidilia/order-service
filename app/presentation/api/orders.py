@@ -22,6 +22,8 @@ async def create_order(
     """Создание нового заказа"""
     try:
         return await create_order_use_case(order=order)
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
