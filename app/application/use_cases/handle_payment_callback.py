@@ -19,7 +19,7 @@ class HandlePaymentCallbackUseCase:
         self._unit_of_work = unit_of_work
 
     async def __call__(self, data: PaymentCallbackDTO):
-        async with self._unit_of_work as unit_of_work:
+        async with self._unit_of_work() as unit_of_work:
             order = unit_of_work.orders.get_by_id(data.order_id)
             if (
                 order.status == OrderStatusEnum.PAID
