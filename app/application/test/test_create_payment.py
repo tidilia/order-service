@@ -1,44 +1,32 @@
-from unittest.mock import AsyncMock
+from decimal import Decimal
+from urllib.parse import urljoin
 
+import httpx
 import pytest
-from httpx import ASGITransport, AsyncClient
 
+from app import config
 from app.infrastructure.clients.payments_service import PaymentsServiceClient
-from app.main import app
 
 
 @pytest.mark.asyncio
-async def test_create_order_calls_payments():
-    # --- MOCK payments client ---
-    mock_payments = AsyncMock(spec=PaymentsServiceClient)
-
-    mock_payments.create_payment.return_value = {
-        "id": "payment-1",
-        "order_id": "order-1",
-        "status": "pending",
-        "amount": "100.00",
-        "idempotency_key": "key-1",
-    }
-
-    # --- override container dependency ---
-    container = app.container
-    container.infrastructure.payments_client.override(lambda: mock_payments)
-
-    transport = ASGITransport(app=app)
-
-    async with AsyncClient(transport=transport, base_url="http://test") as client:
-        response = await client.post(
-            "/api/orders",
-            json={
-                "user_id": "user-1",
-                "item_id": "item-1",
-                "quantity": 1,
-                "idempotency_key": "key-1",
-            },
+async def test_create_payment_real():
+    base_url = config.CAPASHINO_URL
+    api_key = config.LMS_API_KEY
+    callback_url = urljoin(config.INTERNAL_SERVICE_URL, "/api/orders/payment-callback")
+    async with httpx.AsyncClient() as http_client:
+        client = PaymentsServiceClient(
+            base_url=base_url,
+            api_key=api_key,
+            http_client=http_client,
+            callback_url=callback_url,
         )
 
-    print(response.text)
-    assert response.status_code == 201
+        response = await client.create_payment(
+            order_id="test-order-123",
+            amount=Decimal("50.00"),
+            idempotency_key="test-key-123",
+        )
 
-    # --- проверяем, что платеж вызвался ---
-    mock_payments.create_payment.assert_awaited_once()
+        print(response)
+
+        assert response.id is not None

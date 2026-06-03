@@ -5,6 +5,7 @@ from pydantic import BaseModel
 
 from app.application.interfaces import CatalogGateway
 from app.core.models import EventTypeEnum, Order, OrderStatusEnum
+from app.infrastructure.clients.payments_service import PaymentsServiceClient
 from app.infrastructure.repositories.orders import OrderRepository
 from app.infrastructure.repositories.outbox import OutboxRepository
 from app.infrastructure.unit_of_work import UnitOfWork
@@ -29,7 +30,7 @@ class CreateOrderUseCase:
         self,
         unit_of_work: UnitOfWork,
         catalog_client: CatalogGateway,
-        payments_client,
+        payments_client: PaymentsServiceClient,
     ):
         self._unit_of_work = unit_of_work
         self._catalog_client = catalog_client
@@ -79,15 +80,16 @@ class CreateOrderUseCase:
             # 4. Коммит транзакции
             await uow.commit()
 
+            print(self._payments_client)
             try:
                 print("create order payment start")
                 print(order)
-                print(f"order id {order.id}, amount {order.amount}, idempotency key {key}")
+                print(
+                    f"order id {order.id}, amount {order.amount}, idempotency key {key}"
+                )
                 result = await self._payments_client.create_payment(
                     self.CreateOrderCreatePaymentDTO(
-                        order_id=order.id, 
-                        amount=order.amount, 
-                        idempotency_key=key
+                        order_id=order.id, amount=order.amount, idempotency_key=key
                     )
                 )
                 print(result)

@@ -9,7 +9,7 @@ from pydantic import BaseModel
 class PaymentsServiceClient:
     class RequestDTO(BaseModel):
         order_id: str
-        amount: Decimal
+        amount: str
         idempotency_key: str
         callback_url: str
 
@@ -35,18 +35,15 @@ class PaymentsServiceClient:
         self.callback_url = callback_url
 
     async def create_payment(
-        self, 
-        order_id: str, 
-        amount: Decimal, 
-        idempotency_key: str
+        self, order_id: str, amount: Decimal, idempotency_key: str
     ):
-        print({"inside function create payment"})
-        url = urljoin(self.base_url, "api/payments/")
+        print("inside function create payment")
+        url = urljoin(self.base_url, "api/payments")
         headers = {"X-API-Key": self.api_key}
 
         data = self.RequestDTO(
             order_id=order_id,
-            amount=amount,
+            amount=str(amount),
             idempotency_key=idempotency_key,
             callback_url=self.callback_url,
         )
@@ -59,7 +56,7 @@ class PaymentsServiceClient:
             response = await self.http_client.post(
                 url,
                 headers=headers,
-                json=data.model_dump(),
+                json=data.model_dump(mode="json"),
                 timeout=10.0,
             )
             print(response.text)
