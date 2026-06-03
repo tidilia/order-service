@@ -35,8 +35,11 @@ class PaymentsServiceClient:
         self.callback_url = callback_url
 
     async def create_payment(
-        self, order_id, amount, idempotency_key
-    ) -> "PaymentsServiceClient.ResponseDTO":
+        self, 
+        order_id: str, 
+        amount: Decimal, 
+        idempotency_key: str
+    ):
         print({"inside function create payment"})
         url = urljoin(self.base_url, "api/payments/")
         headers = {"X-API-Key": self.api_key}

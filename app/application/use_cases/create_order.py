@@ -1,3 +1,4 @@
+from decimal import Decimal
 
 from fastapi import HTTPException
 from pydantic import BaseModel
@@ -19,6 +20,10 @@ class OrderDTO(BaseModel):
 
 
 class CreateOrderUseCase:
+    class CreateOrderCreatePaymentDTO(BaseModel):
+        order_id: str
+        amount: Decimal
+        idempotency_key: str
 
     def __init__(
         self,
@@ -77,14 +82,15 @@ class CreateOrderUseCase:
             try:
                 print("create order payment start")
                 print(order)
-                print(
-                    f"order id {order.id}, amount {order.amount}, idempotency key {key}"
+                print(f"order id {order.id}, amount {order.amount}, idempotency key {key}")
+                result = await self._payments_client.create_payment(
+                    self.CreateOrderCreatePaymentDTO(
+                        order_id=order.id, 
+                        amount=order.amount, 
+                        idempotency_key=key
+                    )
                 )
-                await self._payments_client.create_payment(
-                    order_id=order.id, 
-                    amount=order.amount, 
-                    idempotency_key=key
-                )
+                print(result)
                 print("create payment end")
             except Exception:
                 await uow.orders.update_status(order.id, OrderStatusEnum.CANCELLED)
