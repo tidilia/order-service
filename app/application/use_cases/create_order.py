@@ -87,10 +87,11 @@ class CreateOrderUseCase:
                 print(
                     f"order id {order.id}, amount {order.amount}, idempotency key {key}"
                 )
+                print(f"pc api: {self._payments_client.api_key} pc callbackurl: {self._payments_client.callback_url} pc url: {self._payments_client.base_url}")
                 result = await self._payments_client.create_payment(
-                    self.CreateOrderCreatePaymentDTO(
-                        order_id=order.id, amount=order.amount, idempotency_key=key
-                    )
+                    order_id=str(order.id), 
+                    amount=Decimal(order.amount), 
+                    idempotency_key=str(key)
                 )
                 print(result)
                 print("create payment end")
