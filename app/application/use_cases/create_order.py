@@ -74,6 +74,8 @@ class CreateOrderUseCase:
 
             # 4. Коммит транзакции
             await uow.commit()
+            
+            print(f"create order: order {order}")
 
             try:
                 await self._payments_client.create_payment(
