@@ -57,7 +57,7 @@ def create_app():
     @app.on_event("startup")
     async def start_consumer():
         consumer = infra.kafka_consumer()
-        handler = app.container.application.handle_shipping_event_use_case()
+        handler = app.container.handle_shipping_event_use_case()
 
         async def run():
             await consumer.start()
