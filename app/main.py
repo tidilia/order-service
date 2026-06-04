@@ -61,7 +61,7 @@ def create_app():
 
         async def run():
             await consumer.start()
-            await consumer.listen()
+            await consumer.listen(handler)
 
         asyncio.create_task(run())
 
