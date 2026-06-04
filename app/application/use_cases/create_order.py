@@ -68,14 +68,19 @@ class CreateOrderUseCase:
             await uow.outbox.create(
                 OutboxRepository.CreateDTO(
                     event_type=EventTypeEnum.order_created,
-                    payload=order.model_dump(mode="json"),
+                    payload={
+                        "event_type": EventTypeEnum.order_created,
+                        "order_id": order.id,
+                        "item_id": order.item_id,
+                        "quantity": order.quantity,
+                        "idempotency_key": order.idempotency_key,
+                    },
                 )
             )
 
             # 4. Коммит транзакции
             await uow.commit()
             
-            print(f"create order: order {order}")
 
             try:
                 await self._payments_client.create_payment(

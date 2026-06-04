@@ -20,7 +20,6 @@ class HandlePaymentCallbackUseCase:
         self._unit_of_work = unit_of_work
 
     async def __call__(self, data: PaymentCallbackDTO):
-        print(f"receive payment {data}")
         async with self._unit_of_work() as unit_of_work:
             order = await unit_of_work.orders.get_by_id(data.order_id)
             if (
