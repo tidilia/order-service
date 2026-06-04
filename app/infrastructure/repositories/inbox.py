@@ -21,7 +21,7 @@ class InboxRepository:
         self._session = session
 
     async def exists(self, shipment_id: str) -> bool:
-        stmt = select(inbox_tbl.c.eshipment_id).where(
+        stmt = select(inbox_tbl.c.shipment_id).where(
             inbox_tbl.c.shipment_id == shipment_id
         )
         result = await self._session.execute(stmt)
