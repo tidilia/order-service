@@ -63,7 +63,7 @@ class InfrastructureContainer(containers.DeclarativeContainer):
 
     kafka_consumer = providers.Singleton(
         ShippingEventsConsumer,
-        bootstrap_servers=config.kafka.bootstrap_server,
+        bootstrap_servers=config.kafka.bootstrap_servers,
         group_id="order-service-group",
     )
 
