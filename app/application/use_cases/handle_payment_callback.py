@@ -35,7 +35,7 @@ class HandlePaymentCallbackUseCase:
                         event_type=EventTypeEnum.order_paid,
                         payload={
                             "event_type": EventTypeEnum.order_paid,
-                            "order_id": order.id,
+                            "order_id": data.order_id,
                             "item_id": order.item_id,
                             "quantity": order.quantity,
                             "idempotency_key": order.idempotency_key,
