@@ -51,9 +51,8 @@ def create_app():
 
     @app.on_event("startup")
     async def startup():
-        producer = app.container.kafka_producer()
+        producer = infra.kafka_producer()
         await producer.start()
-        app.state.kafka_producer = producer
 
         publisher = infra.outbox_publisher()
         asyncio.create_task(publisher.run())
