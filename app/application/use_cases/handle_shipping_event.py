@@ -1,6 +1,3 @@
-
-
-
 class HandleShippingEventUseCase:
     def __init__(self, unit_of_work):
         self._uow = unit_of_work

@@ -31,9 +31,9 @@ class HandlePaymentCallbackUseCase:
                 await unit_of_work.orders.update_status(order.id, OrderStatusEnum.PAID)
                 await unit_of_work.outbox.create(
                     OutboxRepository.CreateDTO(
-                        event_type=EventTypeEnum.ORDER_PAID,
+                        event_type=EventTypeEnum.order_paid,
                         payload={
-                            "event_type": EventTypeEnum.ORDER_PAID,
+                            "event_type": EventTypeEnum.order_paid,
                             "order_id": order.id,
                             "item_id": order.item_id,
                             "quantity": order.quantity,
