@@ -48,10 +48,14 @@ def create_app():
     app.container = app_container
 
     app.include_router(router, prefix="/api")
-    publisher = infra.outbox_publisher()
 
     @app.on_event("startup")
     async def startup():
+        producer = app.container.kafka_producer()
+        await producer.start()
+        app.state.kafka_producer = producer
+
+        publisher = infra.outbox_publisher()
         asyncio.create_task(publisher.run())
 
     @app.on_event("startup")
