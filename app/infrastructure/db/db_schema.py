@@ -1,6 +1,16 @@
 import uuid
 
-from sqlalchemy import JSON, Column, DateTime, Integer, Numeric, Table, Text, func
+from sqlalchemy import (
+    JSON,
+    Boolean,
+    Column,
+    DateTime,
+    Integer,
+    Numeric,
+    Table,
+    Text,
+    func,
+)
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import DeclarativeBase
 
@@ -38,4 +48,15 @@ outbox_tbl = Table(
     Column("payload", JSON, nullable=False),
     Column("status", Text, nullable=False),  # PENDING, SENT
     Column("created_at", DateTime(timezone=True), server_default=func.now()),
+)
+
+inbox_tbl = Table(
+    "inbox",
+    Base.metadata,
+    Column("id", UUID(as_uuid=True), primary_key=True, default=uuid.uuid4),
+    Column("event_id", UUID(as_uuid=True), nullable=False, unique=True),
+    Column("event_type", Text, nullable=False),
+    Column("payload", JSON, nullable=False),
+    Column("processed", Boolean, default=False),
+    Column("created_at", DateTime(timezone=True)),
 )

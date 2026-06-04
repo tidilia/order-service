@@ -55,3 +55,12 @@ class OutboxEvent(BaseModel):
     payload: dict
     status: OutboxEventStatus
     created_at: datetime
+
+
+class InboxEvent(BaseModel):
+    id: str
+    event_id: str
+    event_type: EventTypeEnum
+    payload: dict
+    processed: bool
+    created_at: datetime

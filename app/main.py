@@ -54,6 +54,17 @@ def create_app():
     async def startup():
         asyncio.create_task(publisher.run())
 
+    @app.on_event("startup")
+    async def start_consumer():
+        consumer = infra.kafka_consumer()
+        handler = app.container.application.handle_shipping_event_use_case()
+
+        async def run():
+            await consumer.start()
+            await consumer.listen()
+
+        asyncio.create_task(run())
+
     return app
 
 

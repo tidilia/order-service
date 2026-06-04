@@ -5,6 +5,7 @@ from sqlalchemy.orm import sessionmaker
 
 from app.infrastructure.clients.catalog_service import CatalogServiceClient
 from app.infrastructure.clients.payments_service import PaymentsServiceClient
+from app.infrastructure.kafka.consumer import ShippingEventsConsumer
 from app.infrastructure.kafka.producer import KafkaProducer
 from app.infrastructure.kafka.publisher import OutboxPublisher
 from app.infrastructure.unit_of_work import UnitOfWork
@@ -58,6 +59,12 @@ class InfrastructureContainer(containers.DeclarativeContainer):
     kafka_producer = providers.Singleton(
         KafkaProducer,
         bootstrap_servers=config.kafka.bootstrap_servers,
+    )
+
+    kafka_consumer = providers.Singleton(
+        ShippingEventsConsumer,
+        bootstrap_servers=config.kafka.bootstrap_server,
+        group_id="order-service-group",
     )
 
     outbox_publisher = providers.Singleton(
