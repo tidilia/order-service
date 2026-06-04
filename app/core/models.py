@@ -40,8 +40,8 @@ class Order(BaseModel):
 
 # OutboxEvent, EventTypeEnum, OutboxEventStatus
 class EventTypeEnum(StrEnum):
-    ORDER_CREATED = "order.created"
-    ORDER_PAID = "order.paid"
+    order_created = "order.created"
+    order_paid = "order.paid"
 
 
 class OutboxEventStatus(StrEnum):

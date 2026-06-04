@@ -67,7 +67,7 @@ class CreateOrderUseCase:
             # 3. Публикация события в outbox
             await uow.outbox.create(
                 OutboxRepository.CreateDTO(
-                    event_type=EventTypeEnum.ORDER_CREATED,
+                    event_type=EventTypeEnum.order_created,
                     payload=order.model_dump(mode="json"),
                 )
             )

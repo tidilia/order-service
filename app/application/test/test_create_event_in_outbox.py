@@ -63,4 +63,4 @@ async def test_create_order_creates_outbox_event(
     assert len(events) == 1
     event = events[0]
 
-    assert event.event_type in [EventTypeEnum.ORDER_CREATED, EventTypeEnum.ORDER_PAID]
+    assert event.event_type in [EventTypeEnum.order_created, EventTypeEnum.order_paid]
