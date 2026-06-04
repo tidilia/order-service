@@ -11,7 +11,7 @@ class HandleShippingEventUseCase:
         shipment_id = event["shipment_id"]
         event_type = event["event_type"]
 
-        async with self._uow as uow:
+        async with self._uow() as uow:
             if await uow.inbox.exists(shipment_id):
                 return
 
