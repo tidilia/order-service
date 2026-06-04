@@ -34,12 +34,14 @@ class Order(BaseModel):
     created_at: datetime
     updated_at: datetime
     amount: Decimal
+    idempotency_key: str
     # status_history:
 
 
 # OutboxEvent, EventTypeEnum, OutboxEventStatus
 class EventTypeEnum(StrEnum):
-    ORDER_CREATED = "ORDER.CREATED"
+    ORDER_CREATED = "order.created"
+    ORDER_PAID = "order.paid"
 
 
 class OutboxEventStatus(StrEnum):

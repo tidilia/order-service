@@ -29,3 +29,13 @@ class CatalogGateway(ABC):
     @abstractmethod
     async def get_item(self, item_id: str) -> dict:
         pass
+
+
+class EventPublisher(ABC):
+    @abstractmethod
+    async def publish(
+        self,
+        topic: str,
+        event: dict,
+    ) -> None:
+        pass

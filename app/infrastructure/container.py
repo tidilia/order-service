@@ -5,6 +5,8 @@ from sqlalchemy.orm import sessionmaker
 
 from app.infrastructure.clients.catalog_service import CatalogServiceClient
 from app.infrastructure.clients.payments_service import PaymentsServiceClient
+from app.infrastructure.kafka.producer import KafkaProducer
+from app.infrastructure.kafka.publisher import OutboxPublisher
 from app.infrastructure.unit_of_work import UnitOfWork
 
 
@@ -51,4 +53,13 @@ class InfrastructureContainer(containers.DeclarativeContainer):
         api_key=config.api.api_key,
         callback_url=config.payments.callback_url,
         http_client=http_client,
+    )
+
+    kafka_producer = providers.Singleton(
+        KafkaProducer,
+        bootstrap_servers=config.kafka.bootstrap_servers,
+    )
+
+    outbox_publisher = providers.Singleton(
+        OutboxPublisher, producer=kafka_producer, unit_of_work=unit_of_work
     )

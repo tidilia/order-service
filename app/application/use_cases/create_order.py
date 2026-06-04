@@ -1,3 +1,4 @@
+import traceback
 from decimal import Decimal
 
 from fastapi import HTTPException
@@ -21,11 +22,6 @@ class OrderDTO(BaseModel):
 
 
 class CreateOrderUseCase:
-    class CreateOrderCreatePaymentDTO(BaseModel):
-        order_id: str
-        amount: Decimal
-        idempotency_key: str
-
     def __init__(
         self,
         unit_of_work: UnitOfWork,
@@ -56,7 +52,6 @@ class CreateOrderUseCase:
             if item.available_qty < order.quantity:
                 raise HTTPException(status_code=400, detail="Not enough items in stock")
             full_amount = item.price * order.quantity
-            print(full_amount)
 
             order = await uow.orders.create(
                 OrderRepository.CreateDTO(
@@ -80,22 +75,15 @@ class CreateOrderUseCase:
             # 4. Коммит транзакции
             await uow.commit()
 
-            print(self._payments_client)
             try:
-                print("create order payment start")
-                print(order)
-                print(
-                    f"order id {order.id}, amount {order.amount}, idempotency key {key}"
+                await self._payments_client.create_payment(
+                    order_id=str(order.id),
+                    amount=Decimal(order.amount),
+                    idempotency_key=str(key),
                 )
-                print(f"pc api: {self._payments_client.api_key} pc callbackurl: {self._payments_client.callback_url} pc url: {self._payments_client.base_url}")
-                result = await self._payments_client.create_payment(
-                    order_id=str(order.id), 
-                    amount=Decimal(order.amount), 
-                    idempotency_key=str(key)
-                )
-                print(result)
-                print("create payment end")
-            except Exception:
+            except Exception as e:
+                print("ERROR: ", e)
+                print(traceback.format_exc())
                 await uow.orders.update_status(order.id, OrderStatusEnum.CANCELLED)
                 await uow.commit()
             return order

@@ -1,3 +1,4 @@
+import asyncio
 from urllib.parse import urljoin
 
 from fastapi import FastAPI
@@ -28,6 +29,9 @@ def create_app():
             "payments": {
                 "callback_url": callback_url,
             },
+            "kafka": {
+                "bootstrap_servers": config.KAFKA_BOOTSTRAP_SERVERS,
+            },
         }
     )
 
@@ -44,6 +48,11 @@ def create_app():
     app.container = app_container
 
     app.include_router(router, prefix="/api")
+    publisher = infra.outbox_publisher()
+
+    @app.on_event("startup")
+    async def startup():
+        asyncio.create_task(publisher.run())
 
     return app
 

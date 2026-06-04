@@ -92,5 +92,6 @@ class OrderRepository:
             created_at=row._mapping["created_at"],
             updated_at=row._mapping["updated_at"],
             amount=row._mapping["amount"],
+            idempotency_key=row._mapping["idempotency_key"],
             # status_history=row._mapping["status_history"] or [],
         )

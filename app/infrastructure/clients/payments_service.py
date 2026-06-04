@@ -37,7 +37,6 @@ class PaymentsServiceClient:
     async def create_payment(
         self, order_id: str, amount: Decimal, idempotency_key: str
     ):
-        print("inside function create payment")
         url = urljoin(self.base_url, "api/payments")
         headers = {"X-API-Key": self.api_key}
 
@@ -48,10 +47,6 @@ class PaymentsServiceClient:
             callback_url=self.callback_url,
         )
 
-        print(data)
-
-        print(f"create_payment callback: {self.callback_url}")
-
         try:
             response = await self.http_client.post(
                 url,
@@ -59,7 +54,6 @@ class PaymentsServiceClient:
                 json=data.model_dump(mode="json"),
                 timeout=10.0,
             )
-            print(response.text)
             response.raise_for_status()
             return self.ResponseDTO.model_validate(response.json())
 
