@@ -11,15 +11,19 @@ from app.infrastructure.db.db_schema import inbox_tbl
 
 class InboxRepository:
     class CreateDTO(BaseModel):
-        event_id: str
+        item_id: str
+        order_id: str
+        quantity: int
         event_type: EventTypeEnum
-        payload: dict
+        shipment_id: str
 
     def __init__(self, session: AsyncSession):
         self._session = session
 
-    async def exists(self, event_id: str) -> bool:
-        stmt = select(inbox_tbl.c.event_id).where(inbox_tbl.c.event_id == event_id)
+    async def exists(self, shipment_id: str) -> bool:
+        stmt = select(inbox_tbl.c.eshipment_id).where(
+            inbox_tbl.c.shipment_id == shipment_id
+        )
         result = await self._session.execute(stmt)
         return result.scalar_one_or_none() is not None
 
@@ -29,9 +33,13 @@ class InboxRepository:
             insert(inbox_tbl)
             .values(
                 {
-                    "event_id": event.event_id,
+                    "order_id": event.order_id,
+                    "shipment_id": event.shipment_id,
                     "event_type": event.event_type,
-                    "payload": event.payload,
+                    "payload": {
+                        "item_id": event.item_id,
+                        "quantity": event.quantity,
+                    },
                     "processed": True,
                     "created_at": datetime.now(UTC),
                 }
@@ -47,7 +55,8 @@ class InboxRepository:
         """Преобразование строки БД в Domain модель"""
         return InboxEvent(
             id=str(row._mapping["id"]),
-            event_id=str(row._mapping["event_id"]),
+            order_id=str(row._mapping["order_id"]),
+            shipment_id=str(row._mapping["shipment_id"]),
             event_type=row._mapping["event_type"],
             payload=row._mapping["payload"],
             processed=row._mapping["processed"],

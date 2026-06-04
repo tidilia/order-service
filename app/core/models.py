@@ -42,6 +42,8 @@ class Order(BaseModel):
 class EventTypeEnum(StrEnum):
     order_created = "order.created"
     order_paid = "order.paid"
+    order_shipped = "order.shipped"
+    order_cancelled = "order.cancelled"
 
 
 class OutboxEventStatus(StrEnum):
@@ -59,7 +61,8 @@ class OutboxEvent(BaseModel):
 
 class InboxEvent(BaseModel):
     id: str
-    event_id: str
+    order_id: str
+    shipment_id: str
     event_type: EventTypeEnum
     payload: dict
     processed: bool
