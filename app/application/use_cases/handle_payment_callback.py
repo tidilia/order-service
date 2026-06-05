@@ -45,13 +45,13 @@ class HandlePaymentCallbackUseCase:
                         },
                     )
                 )
-                notif_message = "Ваш заказ успешно оплачен и готов к отправке"
+                notif_message = "PAID Ваш заказ успешно оплачен и готов к отправке"
                 notif_idempotency_key = f"{order.id}:paid"
             elif data.status == PaymentStatusEnum.FAILED:
                 await unit_of_work.orders.update_status(
                     order.id, OrderStatusEnum.CANCELLED
                 )
-                notif_message = "Ваш заказ отменен. Причина: оплата не прошла"
+                notif_message = "CANCELLED Ваш заказ отменен. Причина: оплата не прошла"
                 notif_idempotency_key = f"{order.id}:cancelled"
 
             await unit_of_work.commit()
@@ -59,5 +59,5 @@ class HandlePaymentCallbackUseCase:
             self._send_notification(
                 message=notif_message,
                 reference_id=str(order.id),
-                iddempotency_key=notif_idempotency_key,
+                idempotency_key=notif_idempotency_key,
             )

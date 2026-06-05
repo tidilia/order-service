@@ -15,10 +15,11 @@ class SendNotificationUseCase:
         idempotency_key: str,
     ):
         try:
-            await self._notifications_client.send_notification(
+            response = await self._notifications_client.send_notification(
                 message=message,
                 reference_id=reference_id,
                 idempotency_key=idempotency_key,
             )
+            print(response)
         except Exception as e:
             print(f"Notification error: {e}")

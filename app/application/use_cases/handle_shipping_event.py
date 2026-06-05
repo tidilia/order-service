@@ -41,7 +41,7 @@ class HandleShippingEventUseCase:
                         payload=shipping_event.model_dump(mode="json"),
                     )
                 )
-                notif_message = "Ваш заказ отправлен в доставку"
+                notif_message = "SHIPPED Ваш заказ отправлен в доставку"
                 notif_idempotency_key = f"{event["order_id"]}:shipped"
 
             elif event_type == EventTypeEnum.order_cancelled:
@@ -55,12 +55,12 @@ class HandleShippingEventUseCase:
                         payload=shipping_event.model_dump(mode="json"),
                     )
                 )
-                notif_message = "Ваш заказ отменен. Причина: не удалось доставить"
+                notif_message = "CANCELLED Ваш заказ отменен. Причина: не удалось доставить"
                 notif_idempotency_key = (f"{event["order_id"]}:cancelled",)
 
             await uow.commit()
             self._send_notification(
                 message=notif_message,
                 reference_id=str(event["order_id"]),
-                iddempotency_key=notif_idempotency_key,
+                idempotency_key=notif_idempotency_key,
             )
