@@ -8,7 +8,8 @@ from app.infrastructure.clients.notifications_service import NotificationsServic
 from app.infrastructure.clients.payments_service import PaymentsServiceClient
 from app.infrastructure.kafka.consumer import ShippingEventsConsumer
 from app.infrastructure.kafka.producer import KafkaProducer
-from app.infrastructure.kafka.publisher import OutboxPublisher
+from app.infrastructure.kafka.publisher import OutboxKafkaPublisher
+from app.infrastructure.notification_publisher import NotificationPublisher
 from app.infrastructure.unit_of_work import UnitOfWork
 
 
@@ -64,6 +65,12 @@ class InfrastructureContainer(containers.DeclarativeContainer):
         http_client=http_client,
     )
 
+    notifications_publisher = providers.Factory(
+        NotificationPublisher,
+        unit_of_work=unit_of_work,
+        notifications_client=notifications_client,
+    )
+
     kafka_producer = providers.Singleton(
         KafkaProducer,
         bootstrap_servers=config.kafka.bootstrap_servers,
@@ -75,6 +82,6 @@ class InfrastructureContainer(containers.DeclarativeContainer):
         group_id="order-service-group",
     )
 
-    outbox_publisher = providers.Singleton(
-        OutboxPublisher, producer=kafka_producer, unit_of_work=unit_of_work
+    outbox_kafka_publisher = providers.Singleton(
+        OutboxKafkaPublisher, producer=kafka_producer, unit_of_work=unit_of_work
     )

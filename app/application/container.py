@@ -23,7 +23,6 @@ class ApplicationContainer(containers.DeclarativeContainer):
         unit_of_work=infrastructure.unit_of_work,
         catalog_client=infrastructure.catalog_client,
         payments_client=infrastructure.payments_client,
-        send_notification=send_notification,
     )
 
     get_order_use_case = providers.Factory(
@@ -34,11 +33,9 @@ class ApplicationContainer(containers.DeclarativeContainer):
     handle_payment_callback_use_case = providers.Factory(
         HandlePaymentCallbackUseCase,
         unit_of_work=infrastructure.unit_of_work,
-        send_notification=send_notification,
     )
 
     handle_shipping_event_use_case = providers.Factory(
         HandleShippingEventUseCase,
         unit_of_work=infrastructure.unit_of_work,
-        send_notification=send_notification,
     )

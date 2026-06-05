@@ -25,7 +25,8 @@ class OutboxRepository:
                 {
                     "event_type": event.event_type,
                     "payload": event.payload,
-                    "status": OutboxEventStatus.PENDING,  # Начальный статус
+                    "status_notification": OutboxEventStatus.PENDING,
+                    "status_kafka": OutboxEventStatus.PENDING,  # Начальный статус
                     "created_at": datetime.now(UTC),
                 }
             )
@@ -35,11 +36,11 @@ class OutboxRepository:
         row = result.fetchone()
         return self._construct(row)
 
-    async def get_pending_events(self, limit: int = 100) -> list[OutboxEvent]:
+    async def get_kafka_pending_events(self, limit: int = 100) -> list[OutboxEvent]:
         """Получение неотправленных событий"""
         stmt = (
             select(outbox_tbl)
-            .where(outbox_tbl.c.status == OutboxEventStatus.PENDING)
+            .where(outbox_tbl.c.status_kafka == OutboxEventStatus.PENDING)
             .order_by(outbox_tbl.c.created_at)  # Старые события первыми
             .limit(limit)
         )
@@ -47,12 +48,33 @@ class OutboxRepository:
         rows = result.fetchall()
         return [self._construct(row) for row in rows]
 
-    async def mark_as_sent(self, event_id: str) -> None:
+    async def mark_as_sent_kafka(self, event_id: str) -> None:
         """Пометить событие как отправленное"""
         stmt = (
             outbox_tbl.update()
             .where(outbox_tbl.c.id == event_id)
-            .values(status=OutboxEventStatus.SENT)
+            .values(status_kafka=OutboxEventStatus.SENT)
+        )
+        await self._session.execute(stmt)
+
+    async def get_notif_pending_events(self, limit: int = 100) -> list[OutboxEvent]:
+        """Получение неотправленных событий"""
+        stmt = (
+            select(outbox_tbl)
+            .where(outbox_tbl.c.status_notification == OutboxEventStatus.PENDING)
+            .order_by(outbox_tbl.c.created_at)  # Старые события первыми
+            .limit(limit)
+        )
+        result = await self._session.execute(stmt)
+        rows = result.fetchall()
+        return [self._construct(row) for row in rows]
+
+    async def mark_as_sent_notif(self, event_id: str) -> None:
+        """Пометить событие как отправленное"""
+        stmt = (
+            outbox_tbl.update()
+            .where(outbox_tbl.c.id == event_id)
+            .values(status_notification=OutboxEventStatus.SENT)
         )
         await self._session.execute(stmt)
 
@@ -63,6 +85,7 @@ class OutboxRepository:
             id=str(row._mapping["id"]),
             event_type=row._mapping["event_type"],
             payload=row._mapping["payload"],
-            status=row._mapping["status"],
+            status_kafka=row._mapping["status_kafka"],
+            status_notification=row._mapping["status_notification"],
             created_at=row._mapping["created_at"],
         )

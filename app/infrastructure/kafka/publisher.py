@@ -3,7 +3,7 @@ import asyncio
 from app.config import ORDER_EVENTS_TOPIC
 
 
-class OutboxPublisher:
+class OutboxKafkaPublisher:
     def __init__(
         self,
         producer,
@@ -14,14 +14,14 @@ class OutboxPublisher:
 
     async def publish_pending(self):
         async with self._unit_of_work() as uow:
-            events = await uow.outbox.get_pending_events()
+            events = await uow.outbox.get_kafka_pending_events()
 
             for event in events:
                 await self._producer.publish(
                     topic=ORDER_EVENTS_TOPIC,
                     event=event.payload,
                 )
-                await uow.outbox.mark_as_sent(event.id)
+                await uow.outbox.mark_as_sent_kafka(event.id)
 
             await uow.commit()
 

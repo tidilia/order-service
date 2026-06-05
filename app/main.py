@@ -54,7 +54,7 @@ def create_app():
         producer = infra.kafka_producer()
         await producer.start()
 
-        publisher = infra.outbox_publisher()
+        publisher = infra.outbox_kafka_publisher()
         asyncio.create_task(publisher.run())
 
     @app.on_event("startup")
@@ -67,6 +67,12 @@ def create_app():
             await consumer.listen(handler)
 
         asyncio.create_task(run())
+
+    @app.on_event("startup")
+    async def start_notif_publisher():
+        notif_publisher = infra.notifications_publisher()
+
+        asyncio.create_task(notif_publisher.start())
 
     return app
 

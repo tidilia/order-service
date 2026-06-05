@@ -46,7 +46,8 @@ outbox_tbl = Table(
     Column("id", UUID(as_uuid=True), primary_key=True, default=uuid.uuid4),
     Column("event_type", Text, nullable=False),
     Column("payload", JSON, nullable=False),
-    Column("status", Text, nullable=False),  # PENDING, SENT
+    Column("status_kafka", Text, nullable=False),  # PENDING, SENT
+    Column("status_notification", Text, nullable=False),  # PENDING, SENT
     Column("created_at", DateTime(timezone=True), server_default=func.now()),
 )
 
