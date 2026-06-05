@@ -55,7 +55,8 @@ class OutboxEvent(BaseModel):
     id: str
     event_type: EventTypeEnum
     payload: dict
-    status: OutboxEventStatus
+    status_kafka: OutboxEventStatus
+    status_notification: OutboxEventStatus
     created_at: datetime
 
 
