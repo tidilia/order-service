@@ -2,10 +2,10 @@ from dependency_injector import containers, providers
 
 from app.application.use_cases.create_order import CreateOrderUseCase
 from app.application.use_cases.get_order import GetOrderUseCase
-from app.application.use_cases.handle_payment_callback import \
-    HandlePaymentCallbackUseCase
-from app.application.use_cases.handle_shipping_event import \
-    HandleShippingEventUseCase
+from app.application.use_cases.handle_payment_callback import (
+    HandlePaymentCallbackUseCase,
+)
+from app.application.use_cases.handle_shipping_event import HandleShippingEventUseCase
 
 
 class ApplicationContainer(containers.DeclarativeContainer):

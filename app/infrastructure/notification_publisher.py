@@ -2,8 +2,7 @@ import asyncio
 import logging
 
 from app.core.models import EventTypeEnum
-from app.infrastructure.clients.notifications_service import \
-    NotificationsServiceClient
+from app.infrastructure.clients.notifications_service import NotificationsServiceClient
 from app.infrastructure.unit_of_work import UnitOfWork
 
 logger = logging.getLogger(__name__)
