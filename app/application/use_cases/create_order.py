@@ -27,10 +27,12 @@ class CreateOrderUseCase:
         unit_of_work: UnitOfWork,
         catalog_client: CatalogGateway,
         payments_client: PaymentsServiceClient,
+        send_notification,
     ):
         self._unit_of_work = unit_of_work
         self._catalog_client = catalog_client
         self._payments_client = payments_client
+        self._send_notification = send_notification
 
     async def __call__(self, order: OrderDTO) -> Order:
         async with self._unit_of_work() as uow:
@@ -70,7 +72,7 @@ class CreateOrderUseCase:
                     event_type=EventTypeEnum.order_created,
                     payload={
                         "event_type": EventTypeEnum.order_created,
-                        "order_id": order.id,
+                        "order_id": str(order.id),
                         "item_id": order.item_id,
                         "quantity": order.quantity,
                         "idempotency_key": order.idempotency_key,
@@ -80,7 +82,12 @@ class CreateOrderUseCase:
 
             # 4. Коммит транзакции
             await uow.commit()
-            
+
+            self._send_notification(
+                message="Ваш заказ создан и ожидает оплаты",
+                reference_id=str(order.id),
+                iddempotency_key=f"{order.id}:new",
+            )
 
             try:
                 await self._payments_client.create_payment(

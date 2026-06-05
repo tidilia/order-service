@@ -6,17 +6,24 @@ from app.application.use_cases.handle_payment_callback import (
     HandlePaymentCallbackUseCase,
 )
 from app.application.use_cases.handle_shipping_event import HandleShippingEventUseCase
+from app.application.use_cases.send_notification import SendNotificationUseCase
 
 
 class ApplicationContainer(containers.DeclarativeContainer):
 
     infrastructure = providers.DependenciesContainer()
 
+    send_notification = providers.Factory(
+        SendNotificationUseCase,
+        notifications_client=infrastructure.notifications_client,
+    )
+
     create_order_use_case = providers.Factory(
         CreateOrderUseCase,
         unit_of_work=infrastructure.unit_of_work,
         catalog_client=infrastructure.catalog_client,
         payments_client=infrastructure.payments_client,
+        send_notification=send_notification,
     )
 
     get_order_use_case = providers.Factory(
@@ -27,9 +34,11 @@ class ApplicationContainer(containers.DeclarativeContainer):
     handle_payment_callback_use_case = providers.Factory(
         HandlePaymentCallbackUseCase,
         unit_of_work=infrastructure.unit_of_work,
+        send_notification=send_notification,
     )
 
     handle_shipping_event_use_case = providers.Factory(
         HandleShippingEventUseCase,
         unit_of_work=infrastructure.unit_of_work,
+        send_notification=send_notification,
     )

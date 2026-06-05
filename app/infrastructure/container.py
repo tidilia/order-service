@@ -4,6 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
 
 from app.infrastructure.clients.catalog_service import CatalogServiceClient
+from app.infrastructure.clients.notifications_service import NotificationsServiceClient
 from app.infrastructure.clients.payments_service import PaymentsServiceClient
 from app.infrastructure.kafka.consumer import ShippingEventsConsumer
 from app.infrastructure.kafka.producer import KafkaProducer
@@ -53,6 +54,13 @@ class InfrastructureContainer(containers.DeclarativeContainer):
         base_url=config.capashino_clients.base_url,
         api_key=config.api.api_key,
         callback_url=config.payments.callback_url,
+        http_client=http_client,
+    )
+
+    notifications_client = providers.Factory(
+        NotificationsServiceClient,
+        base_url=config.capashino_clients.base_url,
+        api_key=config.api.api_key,
         http_client=http_client,
     )
 

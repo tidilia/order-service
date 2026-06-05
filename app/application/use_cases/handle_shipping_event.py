@@ -4,8 +4,9 @@ from app.infrastructure.repositories.outbox import OutboxRepository
 
 
 class HandleShippingEventUseCase:
-    def __init__(self, unit_of_work):
+    def __init__(self, unit_of_work, send_notification):
         self._uow = unit_of_work
+        self._send_notification = send_notification
 
     async def __call__(self, event: dict):
         print(f"shipment event {event}")
@@ -15,6 +16,9 @@ class HandleShippingEventUseCase:
         async with self._uow() as uow:
             if await uow.inbox.exists(shipment_id):
                 return
+
+            notif_message = ""
+            notif_idempotency_key = ""
 
             shipping_event = await uow.inbox.create(
                 InboxRepository.CreateDTO(
@@ -37,6 +41,8 @@ class HandleShippingEventUseCase:
                         payload=shipping_event.model_dump(mode="json"),
                     )
                 )
+                notif_message = "Ваш заказ отправлен в доставку"
+                notif_idempotency_key = f"{event["order_id"]}:shipped"
 
             elif event_type == EventTypeEnum.order_cancelled:
                 await uow.orders.update_status(
@@ -49,7 +55,12 @@ class HandleShippingEventUseCase:
                         payload=shipping_event.model_dump(mode="json"),
                     )
                 )
+                notif_message = "Ваш заказ отменен. Причина: не удалось доставить"
+                notif_idempotency_key = (f"{event["order_id"]}:cancelled",)
 
             await uow.commit()
-
-        print(event)
+            self._send_notification(
+                message=notif_message,
+                reference_id=str(event["order_id"]),
+                iddempotency_key=notif_idempotency_key,
+            )

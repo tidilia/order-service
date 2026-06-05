@@ -16,12 +16,16 @@ class PaymentCallbackDTO(BaseModel):
 
 
 class HandlePaymentCallbackUseCase:
-    def __init__(self, unit_of_work: UnitOfWork):
+    def __init__(self, unit_of_work: UnitOfWork, send_notification):
         self._unit_of_work = unit_of_work
+        self._send_notification = send_notification
 
     async def __call__(self, data: PaymentCallbackDTO):
         async with self._unit_of_work() as unit_of_work:
             order = await unit_of_work.orders.get_by_id(data.order_id)
+            notif_message = ""
+            notif_idempotency_key = ""
+
             if (
                 order.status == OrderStatusEnum.PAID
                 and data.status == PaymentStatusEnum.SUCCEEDED
@@ -41,9 +45,19 @@ class HandlePaymentCallbackUseCase:
                         },
                     )
                 )
+                notif_message = "Ваш заказ успешно оплачен и готов к отправке"
+                notif_idempotency_key = f"{order.id}:paid"
             elif data.status == PaymentStatusEnum.FAILED:
                 await unit_of_work.orders.update_status(
                     order.id, OrderStatusEnum.CANCELLED
                 )
+                notif_message = "Ваш заказ отменен. Причина: оплата не прошла"
+                notif_idempotency_key = f"{order.id}:cancelled"
 
             await unit_of_work.commit()
+
+            self._send_notification(
+                message=notif_message,
+                reference_id=str(order.id),
+                iddempotency_key=notif_idempotency_key,
+            )
