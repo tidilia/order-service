@@ -38,15 +38,18 @@ class NotificationPublisher:
             events = await uow.outbox.get_notif_pending_events()
 
             for event in events:
-                print(event)
                 try:
                     payload = event.payload
+                    if event.event_type == EventTypeEnum.order_created:
+                        order_id = payload["id"]
+                    else:
+                        order_id = payload["order_id"]
 
                     message = self._build_message(event.event_type)
 
                     result = await self._client.send_notification(
                         message=message,
-                        reference_id=payload["order_id"],
+                        reference_id=order_id,
                         idempotency_key=payload["idempotency_key"],
                     )
                     
