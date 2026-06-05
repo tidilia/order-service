@@ -46,16 +46,14 @@ class NotificationPublisher:
                         order_id = event.payload["order_id"]
                     idempotency_key = f"{order_id}:{str(event.event_type)}"
                     print(idempotency_key)
-                    
+
                     message = self._build_message(event.event_type)
 
-                    result = await self._client.send_notification(
+                    await self._client.send_notification(
                         message=message,
                         reference_id=order_id,
                         idempotency_key=idempotency_key,
                     )
-                    
-                    print(result)
 
                     await uow.outbox.mark_as_sent_notif(event.id)
 

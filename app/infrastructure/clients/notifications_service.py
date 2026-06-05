@@ -28,8 +28,10 @@ class NotificationsServiceClient:
                     "idempotency_key": idempotency_key,
                 },
             )
-            response.raise_for_status()
-            return response.json()
+            if response.status_code >= 400:
+                print(f"Notification failed {response.status_code} ")
+            return None
 
-        except Exception:
-            raise
+        except Exception as e:
+            print(f"Notification service error: {e}")
+        return None
