@@ -38,16 +38,19 @@ class NotificationPublisher:
             events = await uow.outbox.get_notif_pending_events()
 
             for event in events:
+                print(event)
                 try:
                     payload = event.payload
 
                     message = self._build_message(event.event_type)
 
-                    await self._client.send_notification(
+                    result = await self._client.send_notification(
                         message=message,
                         reference_id=payload["order_id"],
                         idempotency_key=payload["idempotency_key"],
                     )
+                    
+                    print(result)
 
                     await uow.outbox.mark_as_sent_notif(event.id)
 
@@ -62,15 +65,15 @@ class NotificationPublisher:
 
     def _build_message(self, event_type: EventTypeEnum) -> str:
         if event_type == EventTypeEnum.order_created:
-            return "Ваш заказ создан и ожидает оплаты"
+            return "NEW Ваш заказ создан и ожидает оплаты"
 
         if event_type == EventTypeEnum.order_paid:
-            return "Ваш заказ успешно оплачен и готов к отправке"
+            return "PAID Ваш заказ успешно оплачен и готов к отправке"
 
         if event_type == EventTypeEnum.order_shipped:
-            return "Ваш заказ отправлен в доставку"
+            return "SHIPPED Ваш заказ отправлен в доставку"
 
         if event_type == EventTypeEnum.order_cancelled:
-            return "Ваш заказ отменен"
+            return "CANCELLED Ваш заказ отменен"
 
         return "Уведомление по заказу"
