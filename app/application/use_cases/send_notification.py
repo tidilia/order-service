@@ -11,13 +11,13 @@ class SendNotificationUseCase:
     async def __call__(
         self,
         message: str,
-        order_id: str,
+        reference_id: str,
         idempotency_key: str,
     ):
         try:
             await self._notifications_client.send_notification(
                 message=message,
-                reference_id=order_id,
+                reference_id=reference_id,
                 idempotency_key=idempotency_key,
             )
         except Exception as e:
