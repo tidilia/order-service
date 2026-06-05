@@ -86,7 +86,7 @@ class CreateOrderUseCase:
             self._send_notification(
                 message="Ваш заказ создан и ожидает оплаты",
                 reference_id=str(order.id),
-                iddempotency_key=f"{order.id}:new",
+                idempotency_key=f"{order.id}:new",
             )
 
             try:
