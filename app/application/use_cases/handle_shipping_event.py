@@ -59,7 +59,7 @@ class HandleShippingEventUseCase:
                 notif_idempotency_key = (f"{event["order_id"]}:cancelled",)
 
             await uow.commit()
-            self._send_notification(
+            await self._send_notification(
                 message=notif_message,
                 reference_id=str(event["order_id"]),
                 idempotency_key=notif_idempotency_key,

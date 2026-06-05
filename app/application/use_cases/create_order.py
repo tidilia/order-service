@@ -83,7 +83,7 @@ class CreateOrderUseCase:
             # 4. Коммит транзакции
             await uow.commit()
 
-            self._send_notification(
+            await self._send_notification(
                 message="NEW Ваш заказ создан и ожидает оплаты",
                 reference_id=str(order.id),
                 idempotency_key=f"{order.id}:new",

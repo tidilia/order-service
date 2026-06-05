@@ -56,7 +56,7 @@ class HandlePaymentCallbackUseCase:
 
             await unit_of_work.commit()
 
-            self._send_notification(
+            await self._send_notification(
                 message=notif_message,
                 reference_id=str(order.id),
                 idempotency_key=notif_idempotency_key,
