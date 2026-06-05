@@ -2,21 +2,15 @@ from dependency_injector import containers, providers
 
 from app.application.use_cases.create_order import CreateOrderUseCase
 from app.application.use_cases.get_order import GetOrderUseCase
-from app.application.use_cases.handle_payment_callback import (
-    HandlePaymentCallbackUseCase,
-)
-from app.application.use_cases.handle_shipping_event import HandleShippingEventUseCase
-from app.application.use_cases.send_notification import SendNotificationUseCase
+from app.application.use_cases.handle_payment_callback import \
+    HandlePaymentCallbackUseCase
+from app.application.use_cases.handle_shipping_event import \
+    HandleShippingEventUseCase
 
 
 class ApplicationContainer(containers.DeclarativeContainer):
 
     infrastructure = providers.DependenciesContainer()
-
-    send_notification = providers.Factory(
-        SendNotificationUseCase,
-        notifications_client=infrastructure.notifications_client,
-    )
 
     create_order_use_case = providers.Factory(
         CreateOrderUseCase,

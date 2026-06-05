@@ -5,9 +5,7 @@ from app.application.container import ApplicationContainer
 from app.application.use_cases.create_order import CreateOrderUseCase, OrderDTO
 from app.application.use_cases.get_order import GetOrderUseCase
 from app.application.use_cases.handle_payment_callback import (
-    HandlePaymentCallbackUseCase,
-    PaymentCallbackDTO,
-)
+    HandlePaymentCallbackUseCase, PaymentCallbackDTO)
 from app.core.models import Order
 
 # from app.core.exceptions import OrderNotFoundError
