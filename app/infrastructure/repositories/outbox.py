@@ -59,7 +59,7 @@ class OutboxRepository:
 
     async def get_notif_pending_events(self, limit: int = 100) -> list[OutboxEvent]:
         """Получение неотправленных событий"""
-        cutoff = datetime.now(UTC) - timedelta(hours=6)
+        cutoff = datetime.now(UTC) - timedelta(days=1)
 
         stmt = (
             select(outbox_tbl)
