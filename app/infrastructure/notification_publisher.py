@@ -1,5 +1,6 @@
 import asyncio
 import logging
+from datetime import datetime, timedelta, timezone
 
 from app.core.models import EventTypeEnum
 from app.infrastructure.clients.notifications_service import NotificationsServiceClient
@@ -48,11 +49,16 @@ class NotificationPublisher:
 
                     message = self._build_message(event.event_type)
 
-                    await self._client.send_notification(
+                    response = await self._client.send_notification(
                         message=message,
                         reference_id=order_id,
                         idempotency_key=idempotency_key,
                     )
+
+                    if event.created_at > datetime.now(timezone.utc) - timedelta(
+                        minutes=10
+                    ):
+                        print(response)
 
                     await uow.outbox.mark_as_sent_notif(event.id)
 

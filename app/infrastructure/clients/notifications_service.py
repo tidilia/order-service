@@ -29,10 +29,8 @@ class NotificationsServiceClient:
                 },
             )
             if response.status_code >= 400:
-                print(f"Notification failed {response.status_code} ")
-                print(response.text)
-                return None
-            print(response.text)
+                return f"Notification failed {response.status_code} "
+            return response.text
 
         except Exception as e:
             print(f"Notification service error: {e}")

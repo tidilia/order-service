@@ -77,7 +77,7 @@ class CreateOrderUseCase:
                     },
                 )
             )
-            
+
             print("test create order")
             print(str(order.id))
 
