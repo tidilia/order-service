@@ -44,6 +44,7 @@ class NotificationPublisher:
                         minutes=10
                     ):
                         print(event)
+                        order_id =""
                         if event.event_type == EventTypeEnum.order_created:
                             order_id = event.payload["id"]
                         else:
@@ -51,6 +52,9 @@ class NotificationPublisher:
                         idempotency_key = f"{order_id}:{str(event.event_type)}"
 
                         message = self._build_message(event.event_type)
+                        
+                        print(f"{self._client}")
+                        print(f"message {message} ref {order_id}")
 
                         await self._client.send_notification(
                             message=message,
