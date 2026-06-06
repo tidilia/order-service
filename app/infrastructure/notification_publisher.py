@@ -39,7 +39,6 @@ class NotificationPublisher:
             events = await uow.outbox.get_notif_pending_events()
 
             for event in events:
-                print(event)
                 try:
                     if event.event_type == EventTypeEnum.order_created:
                         order_id = event.payload["id"]
@@ -58,6 +57,7 @@ class NotificationPublisher:
                     if event.created_at > datetime.now(timezone.utc) - timedelta(
                         minutes=10
                     ):
+                        print(event)
                         print(response)
 
                     await uow.outbox.mark_as_sent_notif(event.id)
