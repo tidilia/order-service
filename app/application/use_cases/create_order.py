@@ -78,6 +78,7 @@ class CreateOrderUseCase:
                 )
             )
             
+            print("test create order")
             print(str(order.id))
 
             # 4. Коммит транзакции

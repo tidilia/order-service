@@ -38,6 +38,7 @@ class NotificationPublisher:
             events = await uow.outbox.get_notif_pending_events()
 
             for event in events:
+                print(event)
                 try:
                     if event.event_type == EventTypeEnum.order_created:
                         order_id = event.payload["id"]
