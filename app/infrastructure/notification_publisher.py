@@ -39,6 +39,8 @@ class NotificationPublisher:
             events = await uow.outbox.get_notif_pending_events()
 
             for event in events:
+                print(event.created_at)
+                print (event.created_at > datetime.now(UTC) - timedelta(minutes=5))
                 if event.created_at > datetime.now(UTC) - timedelta(minutes=5):
                     try:
                         print(event)
