@@ -15,7 +15,9 @@ class NotificationsServiceClient:
         reference_id: str,
         idempotency_key: str,
     ):
+        print(f"try send_notif order_id: {reference_id}")
         url = urljoin(self.base_url, "api/notifications")
+        print(f"{url}")
         try:
             response = await self.http_client.post(
                 url,
@@ -30,7 +32,7 @@ class NotificationsServiceClient:
             )
             if response.status_code >= 400:
                 return f"Notification failed {response.status_code} "
-            return response.text
+            print(response)
 
         except Exception as e:
             print(f"Notification service error: {e}")

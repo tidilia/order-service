@@ -40,27 +40,25 @@ class NotificationPublisher:
 
             for event in events:
                 try:
-                    if event.event_type == EventTypeEnum.order_created:
-                        order_id = event.payload["id"]
-                    else:
-                        order_id = event.payload["order_id"]
-                    idempotency_key = f"{order_id}:{str(event.event_type)}"
-
-                    message = self._build_message(event.event_type)
-
-                    response = await self._client.send_notification(
-                        message=message,
-                        reference_id=order_id,
-                        idempotency_key=idempotency_key,
-                    )
-
                     if event.created_at > datetime.now(timezone.utc) - timedelta(
                         minutes=10
                     ):
                         print(event)
-                        print(response)
+                        if event.event_type == EventTypeEnum.order_created:
+                            order_id = event.payload["id"]
+                        else:
+                            order_id = event.payload["order_id"]
+                        idempotency_key = f"{order_id}:{str(event.event_type)}"
 
-                    await uow.outbox.mark_as_sent_notif(event.id)
+                        message = self._build_message(event.event_type)
+
+                        await self._client.send_notification(
+                            message=message,
+                            reference_id=order_id,
+                            idempotency_key=idempotency_key,
+                        )
+
+                        await uow.outbox.mark_as_sent_notif(event.id)
 
                 except Exception:
                     logger.exception(
