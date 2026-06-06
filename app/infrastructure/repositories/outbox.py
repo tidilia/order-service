@@ -1,4 +1,4 @@
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 
 from pydantic import BaseModel
 from sqlalchemy import insert, literal_column, select
@@ -59,9 +59,14 @@ class OutboxRepository:
 
     async def get_notif_pending_events(self, limit: int = 100) -> list[OutboxEvent]:
         """Получение неотправленных событий"""
+        cutoff = datetime.now(UTC) - timedelta(hours=6)
+
         stmt = (
             select(outbox_tbl)
-            .where(outbox_tbl.c.status_notification == OutboxEventStatus.PENDING)
+            .where(
+                outbox_tbl.c.status_notification == OutboxEventStatus.PENDING,
+                outbox_tbl.c.created_at >= cutoff,
+            )
             .order_by(outbox_tbl.c.created_at)  # Старые события первыми
             .limit(limit)
         )

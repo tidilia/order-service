@@ -1,6 +1,5 @@
 import asyncio
 import logging
-from datetime import UTC, datetime, timedelta
 
 from app.core.models import EventTypeEnum
 from app.infrastructure.clients.notifications_service import NotificationsServiceClient
@@ -39,41 +38,40 @@ class NotificationPublisher:
             events = await uow.outbox.get_notif_pending_events()
 
             for event in events:
-                if event.created_at > datetime.now(UTC) - timedelta(minutes=5):
+                print(event)
+                try:
                     print(event)
-                    try:
-                        print(event)
-                        order_id = ""
-                        if event.event_type == EventTypeEnum.order_created:
-                            order_id = event.payload["id"]
-                        else:
-                            order_id = event.payload["order_id"]
-                            print(f"order id notif {order_id}")
-                        idempotency_key = f"{order_id}:{str(event.event_type)}"
-                        print(f"idem key {idempotency_key}")
+                    order_id = ""
+                    if event.event_type == EventTypeEnum.order_created:
+                        order_id = event.payload["id"]
+                    else:
+                        order_id = event.payload["order_id"]
+                        print(f"order id notif {order_id}")
+                    idempotency_key = f"{order_id}:{str(event.event_type)}"
+                    print(f"idem key {idempotency_key}")
 
-                        message = self._build_message(event.event_type)
-                        print(f"message {message}")
+                    message = self._build_message(event.event_type)
+                    print(f"message {message}")
 
-                        print(f"{self._client}")
-                        print(f"message {message} ref {order_id}")
+                    print(f"{self._client}")
+                    print(f"message {message} ref {order_id}")
 
-                        await self._client.send_notification(
-                            message=message,
-                            reference_id=order_id,
-                            idempotency_key=idempotency_key,
-                        )
+                    await self._client.send_notification(
+                        message=message,
+                        reference_id=order_id,
+                        idempotency_key=idempotency_key,
+                    )
 
-                        await uow.outbox.mark_as_sent_notif(event.id)
+                    await uow.outbox.mark_as_sent_notif(event.id)
 
-                    except Exception:
-                        logger.exception(
-                            "Failed to send notification",
-                            extra={
-                                "event_id": str(event.id),
-                                "event_type": str(event.event_type),
-                            },
-                        )
+                except Exception:
+                    logger.exception(
+                        "Failed to send notification",
+                        extra={
+                            "event_id": str(event.id),
+                            "event_type": str(event.event_type),
+                        },
+                    )
 
     def _build_message(self, event_type: EventTypeEnum) -> str:
         if event_type == EventTypeEnum.order_created:
