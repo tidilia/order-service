@@ -11,7 +11,6 @@ class HandleShippingEventUseCase:
         self._uow = unit_of_work
 
     async def __call__(self, event: dict):
-        print(f"shipment event {event}")
         shipment_id = event["shipment_id"]
         event_type = event["event_type"]
 

@@ -22,7 +22,6 @@ class KafkaProducer(EventPublisher):
         topic: str,
         event: dict,
     ):
-        print(json.dumps(event).encode())
         await self._producer.send_and_wait(
             topic,
             json.dumps(event).encode(),
