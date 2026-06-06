@@ -77,6 +77,8 @@ class CreateOrderUseCase:
                     },
                 )
             )
+            
+            print(str(order.id))
 
             # 4. Коммит транзакции
             await uow.commit()
