@@ -10,6 +10,7 @@ class ShippingEventsConsumer:
         self.consumer = None
 
     async def start(self):
+        print(SHIPMENT_EVENTS_TOPIC)
         self.consumer = AIOKafkaConsumer(
             SHIPMENT_EVENTS_TOPIC,
             bootstrap_servers=self.bootstrap_servers,
