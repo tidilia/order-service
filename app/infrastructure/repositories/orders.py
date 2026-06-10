@@ -1,7 +1,6 @@
 from datetime import UTC, datetime
 from decimal import Decimal
 
-from pydantic import BaseModel
 from sqlalchemy import insert, literal_column, select, update
 from sqlalchemy.engine import Row
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -12,7 +11,7 @@ from app.infrastructure.db.db_schema import orders_tbl
 
 
 class OrderRepository(OrderRepositoryInterface):
-    class CreateDTO(BaseModel):
+    class CreateDTO(OrderRepositoryInterface.CreateDTO):
         """DTO для создания заказа"""
 
         user_id: str

@@ -1,6 +1,5 @@
 from datetime import UTC, datetime, timedelta
 
-from pydantic import BaseModel
 from sqlalchemy import insert, literal_column, select
 from sqlalchemy.engine import Row
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -11,7 +10,7 @@ from app.infrastructure.db.db_schema import outbox_tbl
 
 
 class OutboxRepository(OutboxRepositoryInterface):
-    class CreateDTO(BaseModel):
+    class CreateDTO(OutboxRepositoryInterface.CreateDTO):
         event_type: EventTypeEnum
         payload: dict
 

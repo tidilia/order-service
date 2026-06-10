@@ -2,11 +2,13 @@ from decimal import Decimal
 
 from pydantic import BaseModel
 
-from app.application.interfaces import (CatalogGateway,
-                                        OrderRepositoryInterface,
-                                        OutboxRepositoryInterface,
-                                        PaymentsServiceClientInterface,
-                                        UnitOfWorkInterface)
+from app.application.interfaces import (
+    CatalogGateway,
+    OrderRepositoryInterface,
+    OutboxRepositoryInterface,
+    PaymentsServiceClientInterface,
+    UnitOfWorkInterface,
+)
 from app.core.exceptions import OutOfStockError
 from app.core.models import EventTypeEnum, Order, OrderStatusEnum
 

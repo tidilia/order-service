@@ -5,14 +5,19 @@ from decimal import Decimal
 
 from pydantic import BaseModel
 
-from app.core.models import (EventTypeEnum, InboxEvent, Order, OrderStatusEnum,
-                             OutboxEvent)
+from app.core.models import (
+    EventTypeEnum,
+    InboxEvent,
+    Order,
+    OrderStatusEnum,
+    OutboxEvent,
+)
 
 
 class OrderRepositoryInterface(ABC):
     """Абстракция для работы с заказами"""
 
-    class CreateDTO(ABC):
+    class CreateDTO(BaseModel):
         user_id: str
         item_id: str
         quantity: int
@@ -41,7 +46,7 @@ class OrderRepositoryInterface(ABC):
 
 
 class OutboxRepositoryInterface(ABC):
-    class CreateDTO(ABC):
+    class CreateDTO(BaseModel):
         event_type: EventTypeEnum
         payload: dict
 
@@ -133,13 +138,13 @@ class UnitOfWorkSessionInterface(ABC):
 
 
 class PaymentsServiceClientInterface(ABC):
-    class RequestDTO(ABC):
+    class RequestDTO(BaseModel):
         order_id: str
         amount: str
         idempotency_key: str
         callback_url: str
 
-    class ResponseDTO(ABC):
+    class ResponseDTO(BaseModel):
         id: str
         user_id: str
         order_id: str
