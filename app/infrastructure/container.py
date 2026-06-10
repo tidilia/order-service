@@ -4,7 +4,8 @@ from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
 
 from app.infrastructure.clients.catalog_service import CatalogServiceClient
-from app.infrastructure.clients.notifications_service import NotificationsServiceClient
+from app.infrastructure.clients.notifications_service import \
+    NotificationsServiceClient
 from app.infrastructure.clients.payments_service import PaymentsServiceClient
 from app.infrastructure.kafka.consumer import ShippingEventsConsumer
 from app.infrastructure.kafka.producer import KafkaProducer

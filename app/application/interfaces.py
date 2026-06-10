@@ -1,22 +1,22 @@
 from abc import ABC, abstractmethod
 from contextlib import AbstractAsyncContextManager
+from datetime import datetime
 from decimal import Decimal
 
-from app.core.models import (
-    EventTypeEnum,
-    InboxEvent,
-    Order,
-    OrderStatusEnum,
-    OutboxEvent,
-)
+from app.core.models import (EventTypeEnum, InboxEvent, Order, OrderStatusEnum,
+                             OutboxEvent)
 
 
 class OrderRepositoryInterface(ABC):
     """Абстракция для работы с заказами"""
 
     class CreateDTO(ABC):
-        event_type: EventTypeEnum
-        payload: dict
+        user_id: str
+        item_id: str
+        quantity: int
+        status: OrderStatusEnum
+        idempotency_key: str
+        amount: Decimal
 
     @abstractmethod
     async def create(self, order: CreateDTO) -> Order:
@@ -40,7 +40,8 @@ class OrderRepositoryInterface(ABC):
 
 class OutboxRepositoryInterface(ABC):
     class CreateDTO(ABC):
-        pass
+        event_type: EventTypeEnum
+        payload: dict
 
     @abstractmethod
     async def create(self, event: CreateDTO) -> OutboxEvent:
@@ -69,7 +70,11 @@ class OutboxRepositoryInterface(ABC):
 
 class InboxRepositoryInterface(ABC):
     class CreateDTO(ABC):
-        pass
+        item_id: str
+        order_id: str
+        quantity: int
+        event_type: EventTypeEnum
+        shipment_id: str
 
     @abstractmethod
     async def exists(self, shipment_id: str) -> bool:
@@ -127,10 +132,19 @@ class UnitOfWorkSessionInterface(ABC):
 
 class PaymentsServiceClientInterface(ABC):
     class RequestDTO(ABC):
-        pass
+        order_id: str
+        amount: str
+        idempotency_key: str
+        callback_url: str
 
     class ResponseDTO(ABC):
-        pass
+        id: str
+        user_id: str
+        order_id: str
+        amount: Decimal
+        status: str
+        idempotency_key: str
+        created_at: datetime
 
     @abstractmethod
     async def create_payment(

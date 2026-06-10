@@ -1,7 +1,5 @@
-from app.application.interfaces import (
-    InboxRepositoryInterface,
-    OutboxRepositoryInterface,
-)
+from app.application.interfaces import (InboxRepositoryInterface,
+                                        OutboxRepositoryInterface)
 from app.core.models import EventTypeEnum, OrderStatusEnum
 
 

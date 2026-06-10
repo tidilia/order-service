@@ -2,7 +2,8 @@ from decimal import Decimal
 
 from pydantic import BaseModel
 
-from app.application.interfaces import OutboxRepositoryInterface, UnitOfWorkInterface
+from app.application.interfaces import (OutboxRepositoryInterface,
+                                        UnitOfWorkInterface)
 from app.core.models import EventTypeEnum, OrderStatusEnum, PaymentStatusEnum
 
 
