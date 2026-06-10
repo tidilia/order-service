@@ -95,7 +95,6 @@ class InboxRepositoryInterface(ABC):
 class PaymentsRepositoryInterface(ABC):
 
     class CreateDTO(BaseModel):
-        payment_id: str
         order_id: str
         amount: Decimal
         status: str
