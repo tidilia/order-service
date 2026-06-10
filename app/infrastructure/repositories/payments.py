@@ -12,7 +12,7 @@ class PaymentsRepository(PaymentsRepositoryInterface):
     async def exists(self, payment_id: str) -> bool:
         stmt = (
             select(payments_tbl.c.id)
-            .where(payments_tbl.c.payment_id == payment_id)
+            .where(payments_tbl.c.id == payment_id)
             .limit(1)
         )
 
@@ -21,7 +21,6 @@ class PaymentsRepository(PaymentsRepositoryInterface):
 
     async def create(self, dto: PaymentsRepositoryInterface.CreateDTO) -> None:
         stmt = insert(payments_tbl).values(
-            payment_id=dto.payment_id,
             order_id=dto.order_id,
             status=dto.status,
             amount=dto.amount,
