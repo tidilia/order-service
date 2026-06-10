@@ -1,7 +1,7 @@
 import json
 
 from aiokafka import AIOKafkaConsumer
-from config import SHIPMENT_EVENTS_TOPIC
+from app.config import SHIPMENT_EVENTS_TOPIC
 
 
 class ShippingEventsConsumer:
