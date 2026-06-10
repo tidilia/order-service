@@ -79,9 +79,6 @@ class CreateOrderUseCase:
                 )
             )
 
-            # 4. Коммит транзакции
-            await uow.commit()
-
             try:
                 await self._payments_client.create_payment(
                     order_id=str(order.id),
@@ -91,4 +88,6 @@ class CreateOrderUseCase:
             except Exception:
                 await uow.orders.update_status(order.id, OrderStatusEnum.CANCELLED)
                 await uow.commit()
+
+            await uow.commit()
             return order

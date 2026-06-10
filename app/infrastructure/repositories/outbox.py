@@ -5,19 +5,15 @@ from sqlalchemy.engine import Row
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.application.interfaces import OutboxRepositoryInterface
-from app.core.models import EventTypeEnum, OutboxEvent, OutboxEventStatus
+from app.core.models import OutboxEvent, OutboxEventStatus
 from app.infrastructure.db.db_schema import outbox_tbl
 
 
 class OutboxRepository(OutboxRepositoryInterface):
-    class CreateDTO(OutboxRepositoryInterface.CreateDTO):
-        event_type: EventTypeEnum
-        payload: dict
-
     def __init__(self, session: AsyncSession):
         self._session = session
 
-    async def create(self, event: CreateDTO) -> OutboxEvent:
+    async def create(self, event: OutboxRepositoryInterface.CreateDTO) -> OutboxEvent:
         """Создание события в outbox"""
         stmt = (
             insert(outbox_tbl)

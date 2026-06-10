@@ -38,6 +38,14 @@ class Order(BaseModel):
     # status_history:
 
 
+class Payment(BaseModel):
+    id: str
+    order_id: str
+    status: PaymentStatusEnum
+    amount: Decimal
+    created_at: datetime
+
+
 # OutboxEvent, EventTypeEnum, OutboxEventStatus
 class EventTypeEnum(StrEnum):
     order_created = "order.created"

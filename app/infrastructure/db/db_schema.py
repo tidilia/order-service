@@ -40,6 +40,37 @@ orders_tbl = Table(
     Column("amount", Numeric(10, 2), nullable=False),
 )
 
+payments_tbl = Table(
+    "payments",
+    Base.metadata,
+    Column(
+        "id",
+        UUID(as_uuid=True),
+        primary_key=True,
+        default=uuid.uuid4,
+    ),
+    Column(
+        "order_id",
+        UUID(as_uuid=True),
+        nullable=False,
+    ),
+    Column(
+        "status",
+        Text,
+        nullable=False,
+    ),
+    Column(
+        "amount",
+        Numeric(10, 2),
+        nullable=False,
+    ),
+    Column(
+        "created_at",
+        DateTime(timezone=True),
+        server_default=func.now(),
+    ),
+)
+
 outbox_tbl = Table(
     "outbox",
     Base.metadata,

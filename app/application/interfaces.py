@@ -92,6 +92,23 @@ class InboxRepositoryInterface(ABC):
         pass
 
 
+class PaymentsRepositoryInterface(ABC):
+
+    class CreateDTO(BaseModel):
+        payment_id: str
+        order_id: str
+        amount: Decimal
+        status: str
+
+    @abstractmethod
+    async def exists(self, payment_id: str) -> bool:
+        pass
+
+    @abstractmethod
+    async def create(self, dto: "PaymentsRepositoryInterface.CreateDTO") -> None:
+        pass
+
+
 class CatalogGateway(ABC):
     @abstractmethod
     async def get_item(self, item_id: str) -> dict:
@@ -130,6 +147,11 @@ class UnitOfWorkSessionInterface(ABC):
     @property
     @abstractmethod
     def inbox(self) -> InboxRepositoryInterface:
+        pass
+
+    @property
+    @abstractmethod
+    def payments(self) -> PaymentsRepositoryInterface:
         pass
 
     @abstractmethod

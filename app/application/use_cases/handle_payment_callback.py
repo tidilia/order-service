@@ -2,7 +2,11 @@ from decimal import Decimal
 
 from pydantic import BaseModel
 
-from app.application.interfaces import OutboxRepositoryInterface, UnitOfWorkInterface
+from app.application.interfaces import (
+    OutboxRepositoryInterface,
+    PaymentsRepositoryInterface,
+    UnitOfWorkInterface,
+)
 from app.core.models import EventTypeEnum, OrderStatusEnum, PaymentStatusEnum
 
 
@@ -24,6 +28,10 @@ class HandlePaymentCallbackUseCase:
     async def __call__(self, data: PaymentCallbackDTO):
         async with self._unit_of_work() as unit_of_work:
             order = await unit_of_work.orders.get_by_id(data.order_id)
+            exists = await unit_of_work.payments.exists(data.payment_id)
+
+            if exists:
+                return
 
             if (
                 order.status == OrderStatusEnum.PAID
@@ -48,4 +56,13 @@ class HandlePaymentCallbackUseCase:
                 await unit_of_work.orders.update_status(
                     order.id, OrderStatusEnum.CANCELLED
                 )
+
+            await unit_of_work.payments.create(
+                PaymentsRepositoryInterface.CreateDTO(
+                    order_id=data.order_id,
+                    status=data.status,
+                    amount=data.amount,
+                )
+            )
+
             await unit_of_work.commit()

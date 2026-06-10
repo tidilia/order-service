@@ -5,18 +5,11 @@ from sqlalchemy.engine import Row
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.application.interfaces import InboxRepositoryInterface
-from app.core.models import EventTypeEnum, InboxEvent
+from app.core.models import InboxEvent
 from app.infrastructure.db.db_schema import inbox_tbl
 
 
 class InboxRepository(InboxRepositoryInterface):
-    class CreateDTO(InboxRepositoryInterface.CreateDTO):
-        item_id: str
-        order_id: str
-        quantity: int
-        event_type: EventTypeEnum
-        shipment_id: str
-
     def __init__(self, session: AsyncSession):
         self._session = session
 
@@ -27,7 +20,7 @@ class InboxRepository(InboxRepositoryInterface):
         result = await self._session.execute(stmt)
         return result.scalar_one_or_none() is not None
 
-    async def create(self, event: CreateDTO) -> InboxEvent:
+    async def create(self, event: InboxRepositoryInterface.CreateDTO) -> InboxEvent:
         """Создание события в inbox"""
         stmt = (
             insert(inbox_tbl)

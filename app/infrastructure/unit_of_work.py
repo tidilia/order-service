@@ -6,6 +6,7 @@ from app.application.interfaces import UnitOfWorkInterface, UnitOfWorkSessionInt
 from app.infrastructure.repositories.inbox import InboxRepository
 from app.infrastructure.repositories.orders import OrderRepository
 from app.infrastructure.repositories.outbox import OutboxRepository
+from app.infrastructure.repositories.payments import PaymentsRepository
 
 
 class UnitOfWork(UnitOfWorkInterface):
@@ -30,6 +31,7 @@ class _UnitOfWorkImplementation(UnitOfWorkSessionInterface):
         self._order_repo = OrderRepository(session)
         self._outbox_repo = OutboxRepository(session)
         self._inbox_repo = InboxRepository(session)
+        self._payments_repo = PaymentsRepository(session)
 
     @property
     def orders(self) -> OrderRepository:
@@ -42,6 +44,10 @@ class _UnitOfWorkImplementation(UnitOfWorkSessionInterface):
     @property
     def inbox(self) -> InboxRepository:
         return self._inbox_repo
+
+    @property
+    def payments(self) -> PaymentsRepository:
+        return self._payments_repo
 
     async def commit(self):
         await self._session.commit()

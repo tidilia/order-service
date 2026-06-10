@@ -1,5 +1,4 @@
 from datetime import UTC, datetime
-from decimal import Decimal
 
 from sqlalchemy import insert, literal_column, select, update
 from sqlalchemy.engine import Row
@@ -11,16 +10,6 @@ from app.infrastructure.db.db_schema import orders_tbl
 
 
 class OrderRepository(OrderRepositoryInterface):
-    class CreateDTO(OrderRepositoryInterface.CreateDTO):
-        """DTO для создания заказа"""
-
-        user_id: str
-        item_id: str
-        quantity: int
-        status: OrderStatusEnum
-        idempotency_key: str
-        amount: Decimal
-
     def __init__(self, session: AsyncSession):
         """Repository получает сессию БД"""
         self._session = session
@@ -28,7 +17,7 @@ class OrderRepository(OrderRepositoryInterface):
     def _get_order_query(self):
         return select(orders_tbl)
 
-    async def create(self, order: CreateDTO) -> Order:
+    async def create(self, order: OrderRepositoryInterface.CreateDTO) -> Order:
         """Создание заказа в БД"""
         stmt = (
             insert(orders_tbl)

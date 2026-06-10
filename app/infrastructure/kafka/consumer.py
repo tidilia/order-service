@@ -1,6 +1,7 @@
 import json
 
 from aiokafka import AIOKafkaConsumer
+from config import SHIPMENT_EVENTS_TOPIC
 
 
 class ShippingEventsConsumer:
@@ -11,7 +12,7 @@ class ShippingEventsConsumer:
 
     async def start(self):
         self.consumer = AIOKafkaConsumer(
-            "student_system-shipment.events",
+            SHIPMENT_EVENTS_TOPIC,
             bootstrap_servers=self.bootstrap_servers,
             group_id=self.group_id,
             auto_offset_reset="earliest",

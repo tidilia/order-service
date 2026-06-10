@@ -10,3 +10,4 @@ if DATABASE_URL.startswith("postgres://"):
 INTERNAL_SERVICE_URL = os.getenv("INTERNAL_SERVICE_URL")
 KAFKA_BOOTSTRAP_SERVERS = os.getenv("KAFKA_BOOTSTRAP_SERVERS")
 ORDER_EVENTS_TOPIC = "student_system-order.events"
+SHIPMENT_EVENTS_TOPIC = "student_system-shipment.events"
