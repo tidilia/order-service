@@ -18,6 +18,7 @@ class ShippingEventsConsumer:
             auto_offset_reset="earliest",
             enable_auto_commit=True,
         )
+        print(self.consumer)
         await self.consumer.start()
 
     async def stop(self):

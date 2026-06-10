@@ -38,6 +38,7 @@ class HandlePaymentCallbackUseCase:
                 and data.status == PaymentStatusEnum.SUCCEEDED
             ):
                 return
+            
             if data.status == PaymentStatusEnum.SUCCEEDED:
                 await unit_of_work.orders.update_status(order.id, OrderStatusEnum.PAID)
                 await unit_of_work.outbox.create(
@@ -52,10 +53,12 @@ class HandlePaymentCallbackUseCase:
                         },
                     )
                 )
+                print(f"Order {order.id} marked as PAID and outbox event created")
             elif data.status == PaymentStatusEnum.FAILED:
                 await unit_of_work.orders.update_status(
                     order.id, OrderStatusEnum.CANCELLED
                 )
+                print(f"Order {order.id} marked as CANCELLED")
 
             await unit_of_work.payments.create(
                 PaymentsRepositoryInterface.CreateDTO(
@@ -64,5 +67,6 @@ class HandlePaymentCallbackUseCase:
                     amount=data.amount,
                 )
             )
+            print(f"Payment record created for order {data.order_id} with status {data.status}")
 
             await unit_of_work.commit()
