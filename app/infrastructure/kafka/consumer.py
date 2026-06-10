@@ -1,8 +1,7 @@
 import json
 
 from aiokafka import AIOKafkaConsumer
-from app.config import SHIPMENT_EVENTS_TOPIC
-
+from app.config import SHIPPING_EVENTS_TOPIC
 
 class ShippingEventsConsumer:
     def __init__(self, bootstrap_servers: str, group_id: str):
@@ -12,7 +11,7 @@ class ShippingEventsConsumer:
 
     async def start(self):
         self.consumer = AIOKafkaConsumer(
-            SHIPMENT_EVENTS_TOPIC,
+            SHIPPING_EVENTS_TOPIC,
             bootstrap_servers=self.bootstrap_servers,
             group_id=self.group_id,
             auto_offset_reset="earliest",
@@ -26,4 +25,5 @@ class ShippingEventsConsumer:
     async def listen(self, handler):
         async for msg in self.consumer:
             event = json.loads(msg.value.decode("utf-8"))
+            print(f"listen: {event}")
             await handler(event)
