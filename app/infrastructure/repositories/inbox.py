@@ -1,6 +1,5 @@
 from datetime import UTC, datetime
 
-from pydantic import BaseModel
 from sqlalchemy import insert, literal_column, select
 from sqlalchemy.engine import Row
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -11,7 +10,7 @@ from app.infrastructure.db.db_schema import inbox_tbl
 
 
 class InboxRepository(InboxRepositoryInterface):
-    class CreateDTO(BaseModel):
+    class CreateDTO(InboxRepositoryInterface.CreateDTO):
         item_id: str
         order_id: str
         quantity: int

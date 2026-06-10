@@ -3,6 +3,8 @@ from contextlib import AbstractAsyncContextManager
 from datetime import datetime
 from decimal import Decimal
 
+from pydantic import BaseModel
+
 from app.core.models import (EventTypeEnum, InboxEvent, Order, OrderStatusEnum,
                              OutboxEvent)
 
@@ -10,7 +12,7 @@ from app.core.models import (EventTypeEnum, InboxEvent, Order, OrderStatusEnum,
 class OrderRepositoryInterface(ABC):
     """Абстракция для работы с заказами"""
 
-    class CreateDTO(ABC):
+    class CreateDTO(BaseModel):
         user_id: str
         item_id: str
         quantity: int
