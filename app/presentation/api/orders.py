@@ -8,6 +8,7 @@ from app.application.use_cases.handle_payment_callback import (
     HandlePaymentCallbackUseCase,
     PaymentCallbackDTO,
 )
+from app.core.exceptions import OutOfStockError
 from app.core.models import Order
 
 # from app.core.exceptions import OrderNotFoundError
@@ -26,6 +27,8 @@ async def create_order(
     """Создание нового заказа"""
     try:
         return await create_order_use_case(order=order)
+    except OutOfStockError as e:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
     except HTTPException:
         raise
     except Exception as e:

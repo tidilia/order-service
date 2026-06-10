@@ -2,9 +2,8 @@ from decimal import Decimal
 
 from pydantic import BaseModel
 
+from app.application.interfaces import OutboxRepositoryInterface, UnitOfWorkInterface
 from app.core.models import EventTypeEnum, OrderStatusEnum, PaymentStatusEnum
-from app.infrastructure.repositories.outbox import OutboxRepository
-from app.infrastructure.unit_of_work import UnitOfWork
 
 
 class PaymentCallbackDTO(BaseModel):
@@ -18,7 +17,7 @@ class PaymentCallbackDTO(BaseModel):
 class HandlePaymentCallbackUseCase:
     def __init__(
         self,
-        unit_of_work: UnitOfWork,
+        unit_of_work: UnitOfWorkInterface,
     ):
         self._unit_of_work = unit_of_work
 
@@ -34,7 +33,7 @@ class HandlePaymentCallbackUseCase:
             if data.status == PaymentStatusEnum.SUCCEEDED:
                 await unit_of_work.orders.update_status(order.id, OrderStatusEnum.PAID)
                 await unit_of_work.outbox.create(
-                    OutboxRepository.CreateDTO(
+                    OutboxRepositoryInterface.CreateDTO(
                         event_type=EventTypeEnum.order_paid,
                         payload={
                             "event_type": EventTypeEnum.order_paid,

@@ -5,11 +5,12 @@ from sqlalchemy import insert, literal_column, select
 from sqlalchemy.engine import Row
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.application.interfaces import OutboxRepositoryInterface
 from app.core.models import EventTypeEnum, OutboxEvent, OutboxEventStatus
 from app.infrastructure.db.db_schema import outbox_tbl
 
 
-class OutboxRepository:
+class OutboxRepository(OutboxRepositoryInterface):
     class CreateDTO(BaseModel):
         event_type: EventTypeEnum
         payload: dict

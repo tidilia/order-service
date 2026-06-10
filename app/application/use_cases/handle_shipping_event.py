@@ -1,6 +1,8 @@
+from app.application.interfaces import (
+    InboxRepositoryInterface,
+    OutboxRepositoryInterface,
+)
 from app.core.models import EventTypeEnum, OrderStatusEnum
-from app.infrastructure.repositories.inbox import InboxRepository
-from app.infrastructure.repositories.outbox import OutboxRepository
 
 
 class HandleShippingEventUseCase:
@@ -19,7 +21,7 @@ class HandleShippingEventUseCase:
                 return
 
             shipping_event = await uow.inbox.create(
-                InboxRepository.CreateDTO(
+                InboxRepositoryInterface.CreateDTO(
                     item_id=event["item_id"],
                     order_id=event["order_id"],
                     quantity=event["quantity"],
@@ -34,7 +36,7 @@ class HandleShippingEventUseCase:
                     OrderStatusEnum.SHIPPED,
                 )
                 await uow.outbox.create(
-                    OutboxRepository.CreateDTO(
+                    OutboxRepositoryInterface.CreateDTO(
                         event_type=EventTypeEnum.order_shipped,
                         payload=shipping_event.model_dump(mode="json"),
                     )
@@ -46,8 +48,8 @@ class HandleShippingEventUseCase:
                     OrderStatusEnum.CANCELLED,
                 )
                 await uow.outbox.create(
-                    OutboxRepository.CreateDTO(
-                        event_type=EventTypeEnum.order_shipped,
+                    OutboxRepositoryInterface.CreateDTO(
+                        event_type=EventTypeEnum.order_cancelled,
                         payload=shipping_event.model_dump(mode="json"),
                     )
                 )

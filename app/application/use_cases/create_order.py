@@ -1,15 +1,16 @@
-import traceback
 from decimal import Decimal
 
-from fastapi import HTTPException
 from pydantic import BaseModel
 
-from app.application.interfaces import CatalogGateway
+from app.application.interfaces import (
+    CatalogGateway,
+    OrderRepositoryInterface,
+    OutboxRepositoryInterface,
+    PaymentsServiceClientInterface,
+    UnitOfWorkInterface,
+)
+from app.core.exceptions import OutOfStockError
 from app.core.models import EventTypeEnum, Order, OrderStatusEnum
-from app.infrastructure.clients.payments_service import PaymentsServiceClient
-from app.infrastructure.repositories.orders import OrderRepository
-from app.infrastructure.repositories.outbox import OutboxRepository
-from app.infrastructure.unit_of_work import UnitOfWork
 
 
 class OrderDTO(BaseModel):
@@ -24,9 +25,9 @@ class OrderDTO(BaseModel):
 class CreateOrderUseCase:
     def __init__(
         self,
-        unit_of_work: UnitOfWork,
+        unit_of_work: UnitOfWorkInterface,
         catalog_client: CatalogGateway,
-        payments_client: PaymentsServiceClient,
+        payments_client: PaymentsServiceClientInterface,
     ):
         self._unit_of_work = unit_of_work
         self._catalog_client = catalog_client
@@ -50,11 +51,11 @@ class CreateOrderUseCase:
 
             item = await self._catalog_client.get_item(order.item_id)
             if item.available_qty < order.quantity:
-                raise HTTPException(status_code=400, detail="Not enough items in stock")
+                raise OutOfStockError(order.item_id)
             full_amount = item.price * order.quantity
 
             order = await uow.orders.create(
-                OrderRepository.CreateDTO(
+                OrderRepositoryInterface.CreateDTO(
                     user_id=order.user_id,
                     quantity=order.quantity,
                     item_id=order.item_id,
@@ -66,7 +67,7 @@ class CreateOrderUseCase:
 
             # 3. Публикация события в outbox
             await uow.outbox.create(
-                OutboxRepository.CreateDTO(
+                OutboxRepositoryInterface.CreateDTO(
                     event_type=EventTypeEnum.order_created,
                     payload={
                         "event_type": EventTypeEnum.order_created,
@@ -78,9 +79,6 @@ class CreateOrderUseCase:
                 )
             )
 
-            print("test create order")
-            print(str(order.id))
-
             # 4. Коммит транзакции
             await uow.commit()
 
@@ -90,9 +88,7 @@ class CreateOrderUseCase:
                     amount=Decimal(order.amount),
                     idempotency_key=str(key),
                 )
-            except Exception as e:
-                print("ERROR: ", e)
-                print(traceback.format_exc())
+            except Exception:
                 await uow.orders.update_status(order.id, OrderStatusEnum.CANCELLED)
                 await uow.commit()
             return order

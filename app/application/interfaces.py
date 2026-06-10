@@ -1,13 +1,22 @@
 from abc import ABC, abstractmethod
+from contextlib import AbstractAsyncContextManager
+from decimal import Decimal
 
-from app.core.models import Order
+from app.core.models import (
+    EventTypeEnum,
+    InboxEvent,
+    Order,
+    OrderStatusEnum,
+    OutboxEvent,
+)
 
 
-class OrderRepository(ABC):
+class OrderRepositoryInterface(ABC):
     """Абстракция для работы с заказами"""
 
     class CreateDTO(ABC):
-        pass
+        event_type: EventTypeEnum
+        payload: dict
 
     @abstractmethod
     async def create(self, order: CreateDTO) -> Order:
@@ -20,8 +29,54 @@ class OrderRepository(ABC):
         pass
 
     @abstractmethod
-    async def update(self, order: Order) -> Order:
-        """Обновить заказ"""
+    async def get_by_idempotency_key(self, key: str):
+        """Получить заказ по idempotency_key"""
+        pass
+
+    @abstractmethod
+    async def update_status(self, order_id: str, status: OrderStatusEnum):
+        pass
+
+
+class OutboxRepositoryInterface(ABC):
+    class CreateDTO(ABC):
+        pass
+
+    @abstractmethod
+    async def create(self, event: CreateDTO) -> OutboxEvent:
+        pass
+
+    @abstractmethod
+    async def get_kafka_pending_events(self, limit: int = 100) -> list[OutboxEvent]:
+        """Получение неотправленных kafka событий"""
+        pass
+
+    @abstractmethod
+    async def mark_as_sent_kafka(self, event_id: str) -> None:
+        """Пометить kafka событие как отправленное"""
+        pass
+
+    @abstractmethod
+    async def get_notif_pending_events(self, limit: int = 100) -> list[OutboxEvent]:
+        """Получение неотправленных событий"""
+        pass
+
+    @abstractmethod
+    async def mark_as_sent_notif(self, event_id: str) -> None:
+        """Пометить событие как отправленное"""
+        pass
+
+
+class InboxRepositoryInterface(ABC):
+    class CreateDTO(ABC):
+        pass
+
+    @abstractmethod
+    async def exists(self, shipment_id: str) -> bool:
+        pass
+
+    @abstractmethod
+    async def create(self, event: CreateDTO) -> InboxEvent:
         pass
 
 
@@ -38,4 +93,47 @@ class EventPublisher(ABC):
         topic: str,
         event: dict,
     ) -> None:
+        pass
+
+
+class UnitOfWorkInterface(ABC):
+
+    @abstractmethod
+    def __call__(self) -> AbstractAsyncContextManager["UnitOfWorkSessionInterface"]:
+        pass
+
+
+class UnitOfWorkSessionInterface(ABC):
+
+    @property
+    @abstractmethod
+    def orders(self) -> OrderRepositoryInterface:
+        pass
+
+    @property
+    @abstractmethod
+    def outbox(self) -> OutboxRepositoryInterface:
+        pass
+
+    @property
+    @abstractmethod
+    def inbox(self) -> InboxRepositoryInterface:
+        pass
+
+    @abstractmethod
+    async def commit(self) -> None:
+        pass
+
+
+class PaymentsServiceClientInterface(ABC):
+    class RequestDTO(ABC):
+        pass
+
+    class ResponseDTO(ABC):
+        pass
+
+    @abstractmethod
+    async def create_payment(
+        self, order_id: str, amount: Decimal, idempotency_key: str
+    ):
         pass

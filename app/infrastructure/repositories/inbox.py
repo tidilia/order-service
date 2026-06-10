@@ -5,11 +5,12 @@ from sqlalchemy import insert, literal_column, select
 from sqlalchemy.engine import Row
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.application.interfaces import InboxRepositoryInterface
 from app.core.models import EventTypeEnum, InboxEvent
 from app.infrastructure.db.db_schema import inbox_tbl
 
 
-class InboxRepository:
+class InboxRepository(InboxRepositoryInterface):
     class CreateDTO(BaseModel):
         item_id: str
         order_id: str

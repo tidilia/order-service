@@ -1,9 +1,9 @@
+from app.application.interfaces import UnitOfWorkInterface
 from app.core.models import Order
-from app.infrastructure.unit_of_work import UnitOfWork
 
 
 class GetOrderUseCase:
-    def __init__(self, unit_of_work: UnitOfWork):
+    def __init__(self, unit_of_work: UnitOfWorkInterface):
         self._unit_of_work = unit_of_work
 
     async def __call__(self, order_id: str) -> Order:

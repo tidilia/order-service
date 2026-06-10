@@ -2,12 +2,13 @@ from contextlib import asynccontextmanager
 
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
+from app.application.interfaces import UnitOfWorkInterface, UnitOfWorkSessionInterface
 from app.infrastructure.repositories.inbox import InboxRepository
 from app.infrastructure.repositories.orders import OrderRepository
 from app.infrastructure.repositories.outbox import OutboxRepository
 
 
-class UnitOfWork:
+class UnitOfWork(UnitOfWorkInterface):
     def __init__(self, session_factory: async_sessionmaker[AsyncSession]):
         self._session_factory = session_factory
 
@@ -22,7 +23,7 @@ class UnitOfWork:
                 raise
 
 
-class _UnitOfWorkImplementation:
+class _UnitOfWorkImplementation(UnitOfWorkSessionInterface):
 
     def __init__(self, session: AsyncSession):
         self._session = session

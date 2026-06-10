@@ -5,8 +5,10 @@ from urllib.parse import urljoin
 import httpx
 from pydantic import BaseModel
 
+from app.application.interfaces import PaymentsServiceClientInterface
 
-class PaymentsServiceClient:
+
+class PaymentsServiceClient(PaymentsServiceClientInterface):
     class RequestDTO(BaseModel):
         order_id: str
         amount: str
