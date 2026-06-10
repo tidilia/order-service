@@ -10,11 +10,7 @@ class PaymentsRepository(PaymentsRepositoryInterface):
         self._session = session
 
     async def exists(self, payment_id: str) -> bool:
-        stmt = (
-            select(payments_tbl.c.id)
-            .where(payments_tbl.c.id == payment_id)
-            .limit(1)
-        )
+        stmt = select(payments_tbl.c.id).where(payments_tbl.c.id == payment_id).limit(1)
 
         result = await self._session.execute(stmt)
         return result.scalar() is not None

@@ -13,7 +13,6 @@ class HandleShippingEventUseCase:
         self._uow = unit_of_work
 
     async def __call__(self, event: dict):
-        print(f"HandleShippingEventUseCase: {event}")
         shipment_id = event["shipment_id"]
         event_type = event["event_type"]
 
@@ -21,7 +20,6 @@ class HandleShippingEventUseCase:
             if await uow.inbox.exists(shipment_id):
                 return
 
-            print(f"Creating inbox event for shipment_id: {shipment_id}")
             shipping_event = await uow.inbox.create(
                 InboxRepositoryInterface.CreateDTO(
                     item_id=event["item_id"],
@@ -31,16 +29,13 @@ class HandleShippingEventUseCase:
                     shipment_id=event["shipment_id"],
                 )
             )
-            print(f"Inbox event created: {shipping_event}")
-            print("Changing order status based on shipping event")
 
             if event_type == EventTypeEnum.order_shipped:
                 await uow.orders.update_status(
                     event["order_id"],
                     OrderStatusEnum.SHIPPED,
                 )
-                print("Order status updated to SHIPPED")
-                print("Creating outbox event for order_shipped")
+
                 await uow.outbox.create(
                     OutboxRepositoryInterface.CreateDTO(
                         event_type=EventTypeEnum.order_shipped,
