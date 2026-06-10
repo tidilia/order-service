@@ -12,13 +12,9 @@ from app.core.models import (EventTypeEnum, InboxEvent, Order, OrderStatusEnum,
 class OrderRepositoryInterface(ABC):
     """Абстракция для работы с заказами"""
 
-    class CreateDTO(BaseModel):
-        user_id: str
-        item_id: str
-        quantity: int
-        status: OrderStatusEnum
-        idempotency_key: str
-        amount: Decimal
+    class CreateDTO(ABC):
+        event_type: EventTypeEnum
+        payload: dict
 
     @abstractmethod
     async def create(self, order: CreateDTO) -> Order:
@@ -41,9 +37,13 @@ class OrderRepositoryInterface(ABC):
 
 
 class OutboxRepositoryInterface(ABC):
-    class CreateDTO(ABC):
-        event_type: EventTypeEnum
-        payload: dict
+    class CreateDTO(BaseModel):
+        user_id: str
+        item_id: str
+        quantity: int
+        status: OrderStatusEnum
+        idempotency_key: str
+        amount: Decimal
 
     @abstractmethod
     async def create(self, event: CreateDTO) -> OutboxEvent:
